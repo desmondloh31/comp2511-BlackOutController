@@ -1,0 +1,11 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.debug.settings.onBuildFailureProceed": true,
+    "editor.formatOnSave": true,
+    "java.checkstyle.version": "10.3.3",
+    "java.checkstyle.configuration": "${workspaceFolder}/checkstyle.xml",
+    "java.format.settings.url": ".vscode/java-formatter.xml",
+    "[java]": {
+        "editor.detectIndentation": false
+    },
+}
