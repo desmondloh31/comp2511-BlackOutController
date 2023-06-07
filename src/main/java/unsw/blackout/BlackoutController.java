@@ -2,13 +2,33 @@ package unsw.blackout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
+
+import java.io.FileNotFoundException;
+import java.nio.file.FileAlreadyExistsException;
 
 import unsw.response.models.EntityInfoResponse;
+import unsw.response.models.FileInfoResponse;
 import unsw.utils.Angle;
 
 public class BlackoutController {
+    List<DeviceConstructor> devices = new ArrayList<DeviceConstructor>();
+    List<SatelliteConstructor> satellites = new ArrayList<SatelliteConstructor>();
+
+    // helper functions for getting the deviceList and getting the satelliteList:
+    public List<DeviceConstructor> getDeviceList() {
+        return devices;
+    }
+
+    public List<SatelliteConstructor> getSatelliteList() {
+        return satellites;
+    }
+
     public void createDevice(String deviceId, String type, Angle position) {
-        // TODO: Task 1a)
+        if (type.equals("HandheldDevice")) {
+            devices.add(new HandheldDevice(deviceId, type, position));
+        }
     }
 
     public void removeDevice(String deviceId) {
@@ -47,8 +67,8 @@ public class BlackoutController {
     }
 
     /**
-     * Simulate for the specified number of minutes.
-     * You shouldn't need to modify this function.
+     * Simulate for the specified number of minutes. You shouldn't need to modify
+     * this function.
      */
     public void simulate(int numberOfMinutes) {
         for (int i = 0; i < numberOfMinutes; i++) {
