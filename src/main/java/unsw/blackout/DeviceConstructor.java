@@ -3,9 +3,10 @@ package unsw.blackout;
 import unsw.response.models.EntityInfoResponse;
 import unsw.utils.Angle;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class DeviceConstructor {
     private String deviceType;
@@ -34,18 +35,6 @@ public abstract class DeviceConstructor {
         return this.devicePosition;
     }
 
-    public void setDeviceType() {
-        this.deviceType = deviceType;
-    }
-
-    public void setDeviceId() {
-        this.deviceId = deviceId;
-    }
-
-    public void setDevicePosition() {
-        this.devicePosition = devicePosition;
-    }
-
     // list all the files listed in the device:
     public List<FileConstructor> getFileList() {
         return fileList;
@@ -56,8 +45,24 @@ public abstract class DeviceConstructor {
         fileList.add(file);
     }
 
-    // public abstract EntityInfoResponse getDeviceInfo();
-    // public abstract List<String>
-    // updateListOfCommunicableEntities(BlackoutController controller);
+    public abstract EntityInfoResponse getInfo();
+
+    public abstract List<String> updateList(BlackoutController controller);
+
+    protected Map<String, FileTransfer> fileTransfers;
+    protected Map<String, FileConstructor> files;
+
+    public DeviceConstructor() {
+        this.fileTransfers = new HashMap<>();
+        this.files = new HashMap<>();
+    }
+
+    public Map<String, FileTransfer> getFileTransfers() {
+        return this.fileTransfers;
+    }
+
+    public Map<String, FileConstructor> getFiles() {
+        return this.files;
+    }
 
 }

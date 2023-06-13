@@ -19,6 +19,10 @@ public class FileConstructor {
         return this.fileDetails;
     }
 
+    public int getFileSize() {
+        return fileDetails.length();
+    }
+
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }

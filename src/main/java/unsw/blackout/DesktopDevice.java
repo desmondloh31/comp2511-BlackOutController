@@ -12,37 +12,36 @@ import java.util.Map;
 
 import static unsw.utils.MathsHelper.RADIUS_OF_JUPITER;
 
-public class HandheldDevice extends DeviceConstructor {
-    private final float maxDistance = 50000;
+public class DesktopDevice extends DeviceConstructor {
+    private final double maxDistance = 200000;
 
-    public HandheldDevice(String deviceId, String deviceType, Angle devicePosition) {
-        super("HandheldDevice", deviceId, devicePosition);
+    public DesktopDevice(String deviceId, String deviceType, Angle devicePosition) {
+        super("DesktopDevice", deviceId, devicePosition);
     }
 
     public EntityInfoResponse getInfo() {
+        String deviceType = super.getDeviceType();
         String deviceId = super.getDeviceId();
         Angle devicePosition = super.getDevicePosition();
-        String deviceType = super.getDeviceType();
         double deviceHeight = RADIUS_OF_JUPITER;
 
         Map<String, FileInfoResponse> map = new HashMap<>();
-        for (FileConstructor file : getFileList()) {
-            String fileData = file.getFileDetails();
+        for (FileConstructor file : super.getFileList()) {
             String fileName = file.getFileName();
-            int fileSize = fileData.length();
-            boolean transferSuccess = true;
-            FileInfoResponse fileInfo = new FileInfoResponse(fileName, fileData, fileSize, transferSuccess);
+            String fileDetails = file.getFileDetails();
+            int fileSize = fileDetails.length();
+            FileInfoResponse fileInfo = new FileInfoResponse(fileName, fileDetails, fileSize, true);
             map.put(fileName, fileInfo);
-
         }
-
-        return new EntityInfoResponse((deviceId), devicePosition, deviceHeight, deviceType, map);
+        return new EntityInfoResponse(deviceId, devicePosition, deviceHeight, deviceType, map);
     }
 
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
-        for (SatelliteConstructor satellite : blackout.getSatelliteList()) {
-            if (withinVisibleRange(satellite)) {
+        List<SatelliteConstructor> satellites = blackout.getSatelliteList();
+        for (SatelliteConstructor satellite : satellites) {
+            if (("TeleportingSatellite".equals(satellite.getSatelliteType())
+                    || "RelaySatellite".equals(satellite.getSatelliteType())) && withinVisibleRange(satellite)) {
                 list.add(satellite.getSatelliteId());
             }
         }
@@ -55,7 +54,5 @@ public class HandheldDevice extends DeviceConstructor {
         boolean visible = MathsHelper.isVisible(satellite.getSatelliteHeight(), satellite.getSatellitePosition(),
                 super.getDevicePosition());
         return distance <= maxDistance && visible;
-
     }
-
 }

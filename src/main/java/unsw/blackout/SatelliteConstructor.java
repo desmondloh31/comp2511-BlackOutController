@@ -2,22 +2,25 @@ package unsw.blackout;
 
 import unsw.response.models.EntityInfoResponse;
 import unsw.utils.Angle;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class SatelliteConstructor {
     private String satelliteId;
-    private float satelliteHeight;
+    private double satelliteHeight;
     private String satelliteType;
     private Angle satellitePosition;
 
     private List<FileConstructor> fileList = new ArrayList<FileConstructor>();
 
-    public SatelliteConstructor(String satelliteId, float satelliteHeight, String satelliteType,
+    public SatelliteConstructor(String satelliteId, String satelliteType, double satelliteHeight,
             Angle satellitePosition) {
         this.satelliteId = satelliteId;
-        this.satelliteHeight = satelliteHeight;
         this.satelliteType = satelliteType;
+        this.satelliteHeight = satelliteHeight;
         this.satellitePosition = satellitePosition;
     }
 
@@ -26,7 +29,7 @@ public abstract class SatelliteConstructor {
         return this.satelliteId;
     }
 
-    public float getSatelliteHeight() {
+    public double getSatelliteHeight() {
         return this.satelliteHeight;
     }
 
@@ -38,19 +41,7 @@ public abstract class SatelliteConstructor {
         return this.satellitePosition;
     }
 
-    public void setSatelliteId() {
-        this.satelliteId = satelliteId;
-    }
-
-    public void setSatelliteHeight() {
-        this.satelliteHeight = satelliteHeight;
-    }
-
-    public void setSatelliteType() {
-        this.satelliteType = satelliteType;
-    }
-
-    public void setSatellitePosition() {
+    public void setSatellitePosition(Angle satellitePosition) {
         this.satellitePosition = satellitePosition;
     }
 
@@ -64,8 +55,25 @@ public abstract class SatelliteConstructor {
         fileList.add(file);
     }
 
-    // public abstract EntityInfoResponse getSatelliteInfo();
-    // public abstract void updatePosition();
-    // public abstract List<String>
-    // updateListOfCommunicableEntities(BlackoutController controller);
+    public abstract EntityInfoResponse getInfo();
+
+    public abstract void updatePosition();
+
+    public abstract List<String> updateList(BlackoutController controller);
+
+    protected Map<String, FileTransfer> fileTransfers;
+    protected Map<String, FileConstructor> files;
+
+    public SatelliteConstructor() {
+        this.fileTransfers = new HashMap<>();
+        this.files = new HashMap<>();
+    }
+
+    public Map<String, FileTransfer> getFileTransfers() {
+        return this.fileTransfers;
+    }
+
+    public Map<String, FileConstructor> getFiles() {
+        return this.files;
+    }
 }

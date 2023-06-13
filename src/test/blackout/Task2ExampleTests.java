@@ -12,6 +12,7 @@ import unsw.utils.Angle;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static unsw.utils.MathsHelper.RADIUS_OF_JUPITER;
@@ -29,7 +30,8 @@ public class Task2ExampleTests {
         BlackoutController controller = new BlackoutController();
 
         // Creates 1 satellite and 2 devices
-        // Gets a device to send a file to a satellites and gets another device to download it.
+        // Gets a device to send a file to a satellites and gets another device to
+        // download it.
         // StandardSatellites are slow and transfer 1 byte per minute.
         controller.createSatellite("Satellite1", "StandardSatellite", 1000 + RADIUS_OF_JUPITER, Angle.fromDegrees(320));
         controller.createSatellite("Satellite2", "StandardSatellite", 1000 + RADIUS_OF_JUPITER, Angle.fromDegrees(315));
@@ -53,7 +55,8 @@ public class Task2ExampleTests {
         BlackoutController controller = new BlackoutController();
 
         // Creates 1 satellite and 2 devices
-        // Gets a device to send a file to a satellites and gets another device to download it.
+        // Gets a device to send a file to a satellites and gets another device to
+        // download it.
         // StandardSatellites are slow and transfer 1 byte per minute.
         controller.createSatellite("Satellite1", "StandardSatellite", 5000 + RADIUS_OF_JUPITER, Angle.fromDegrees(320));
         controller.createDevice("DeviceB", "LaptopDevice", Angle.fromDegrees(310));
@@ -79,7 +82,8 @@ public class Task2ExampleTests {
         BlackoutController controller = new BlackoutController();
 
         // Creates 1 satellite and 2 devices
-        // Gets a device to send a file to a satellites and gets another device to download it.
+        // Gets a device to send a file to a satellites and gets another device to
+        // download it.
         // StandardSatellites are slow and transfer 1 byte per minute.
         controller.createSatellite("Satellite1", "StandardSatellite", 100 + RADIUS_OF_JUPITER, Angle.fromDegrees(340));
         assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(340), 100 + RADIUS_OF_JUPITER,
@@ -96,7 +100,8 @@ public class Task2ExampleTests {
         BlackoutController controller = new BlackoutController();
 
         // Creates 1 satellite and 2 devices
-        // Gets a device to send a file to a satellites and gets another device to download it.
+        // Gets a device to send a file to a satellites and gets another device to
+        // download it.
         // StandardSatellites are slow and transfer 1 byte per minute.
         controller.createSatellite("Satellite1", "StandardSatellite", 10000 + RADIUS_OF_JUPITER,
                 Angle.fromDegrees(320));
@@ -134,7 +139,8 @@ public class Task2ExampleTests {
         BlackoutController controller = new BlackoutController();
 
         // Creates 1 satellite and 2 devices
-        // Gets a device to send a file to a satellites and gets another device to download it.
+        // Gets a device to send a file to a satellites and gets another device to
+        // download it.
         // StandardSatellites are slow and transfer 1 byte per minute.
         controller.createSatellite("Satellite1", "RelaySatellite", 100 + RADIUS_OF_JUPITER, Angle.fromDegrees(180));
 
@@ -192,4 +198,31 @@ public class Task2ExampleTests {
         // Verify that Satellite1 is now at theta=0
         assertTrue(controller.getInfo("Satellite1").getPosition().toDegrees() % 360 == 0);
     }
+
+    // personal test to test simulate:
+    @Test
+    public void testSimulate() {
+
+        BlackoutController controller = new BlackoutController();
+
+        controller.createSatellite("Satellite1", "StandardSatellite", 75000, Angle.fromDegrees(0));
+        controller.createSatellite("Satellite2", "RelaySatellite", 10000, Angle.fromDegrees(180));
+        controller.createSatellite("Satellite3", "TeleportingSatellite", 125000, Angle.fromDegrees(90));
+
+        Angle initialPosition1 = controller.getInfo("Satellite1").getPosition();
+        Angle initialPosition2 = controller.getInfo("Satellite2").getPosition();
+        Angle initialPosition3 = controller.getInfo("Satellite3").getPosition();
+
+        controller.simulate();
+
+        Angle updatedPosition1 = controller.getInfo("Satellite1").getPosition();
+        Angle updatedPosition2 = controller.getInfo("Satellite2").getPosition();
+        Angle updatedPosition3 = controller.getInfo("Satellite3").getPosition();
+
+        assertNotEquals(initialPosition1, updatedPosition1);
+        assertNotEquals(initialPosition2, updatedPosition2);
+        assertNotEquals(initialPosition3, updatedPosition3);
+
+    }
+
 }
