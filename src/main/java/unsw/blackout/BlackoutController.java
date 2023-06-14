@@ -46,6 +46,8 @@ public class BlackoutController {
         return null;
     }
 
+    // Helper function that finds Entire Entity by Id:
+
     public void createDevice(String deviceId, String type, Angle position) {
         // System.out.println("Creating device: " + deviceId + ", " + type);
         if (type.equals("HandheldDevice")) {
@@ -174,7 +176,25 @@ public class BlackoutController {
     }
 
     public void sendFile(String fileName, String fromId, String toId) throws FileTransferException {
-        // TODO: Task 2 c)
+        // TODO: Task 2 c) // test:
+        Map<String, FileInfoResponse> senderFiles = getInfo(fromId).getFiles();
+        Map<String, FileInfoResponse> receiverFiles = getInfo(toId).getFiles();
+        FileInfoResponse senderFile = senderFiles.get(fileName);
+        if (senderFile == null) {
+            throw new FileTransferException.VirtualFileNotFoundException(fileName);
+        }
+
+        if (receiverFiles.containsKey(fileName)) {
+            throw new FileTransferException.VirtualFileAlreadyExistsException(fileName);
+        }
+
+        SatelliteConstructor target = satellites.stream().filter(satellite -> satellite.getSatelliteId().equals(toId))
+                .findFirst().orElse(null);
+
+        if (target != null) {
+            FileConstructor file = target.getFileByName(fileName);
+        }
+
     }
 
     public void createDevice(String deviceId, String type, Angle position, boolean isMoving) {

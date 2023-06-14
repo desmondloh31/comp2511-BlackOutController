@@ -83,25 +83,43 @@ public class TeleportingSatellite extends SatelliteConstructor {
         if (Math.abs(this.getSatellitePosition().toDegrees() - 180) < 1e-6) {
             this.setSatellitePosition(Angle.fromDegrees(0));
         }
-        for (Map.Entry<String, FileTransfer> entry : this.getFileTransfers().entrySet()) {
-            FileTransfer transfer = entry.getValue();
-            if (transfer.isInProgress()) {
-                if (transfer.getDirection() == FileTransfer.Direction.UPLOAD) {
-                    String remainingData = transfer.getFile().getFileDetails()
-                            .substring(transfer.getBytesTransferred());
-                    String filteredData = remainingData.replace("t", "").replace("T", "");
-                    transfer.getFile().setFileDetails(filteredData);
-                    transfer.setBytesTransferred(transfer.getFile().getFileSize());
-                }
-                // Handle device to satellite dataTransfer:
-                else if (transfer.getDirection() == FileTransfer.Direction.DOWNLOAD) {
-                    this.getFiles().remove(transfer.getFile().getFileName());
-                    String deviceData = transfer.getSourceDevice().getFiles().get(transfer.getFile().getFileName())
-                            .getFileDetails();
-                    String filteredData = deviceData.replace("t", "").replace("T", "");
-                    transfer.getSourceDevice().getFiles().get(transfer.getFile().getFileName())
-                            .setFileDetails(filteredData);
-                    this.getFileTransfers().remove(entry.getKey());
+        Map<String, FileTransfer> fileTransfers = this.getFileTransfers();
+        if (fileTransfers != null) {
+            for (Map.Entry<String, FileTransfer> entry : fileTransfers.entrySet()) {
+                FileTransfer transfer = entry.getValue();
+                if (transfer != null && transfer.isInProgress()) {
+                    if (transfer.getDirection() == FileTransfer.Direction.UPLOAD) {
+                        FileConstructor file = transfer.getFile();
+                        if (file != null) {
+                            String remainingData = file.getFileDetails();
+                            if (remainingData != null) {
+                                remainingData = remainingData.substring(transfer.getBytesTransferred());
+                                String filteredData = remainingData.replace("t", "").replace("T", "");
+                                file.setFileDetails(filteredData);
+                                transfer.setBytesTransferred(file.getFileSize());
+                            }
+                        }
+                    }
+                    // Handle device to satellite dataTransfer:
+                    else if (transfer.getDirection() == FileTransfer.Direction.DOWNLOAD) {
+                        String fileName = transfer.getFile().getFileName();
+                        this.getFiles().remove(fileName);
+                        DeviceConstructor sourceDevice = transfer.getSourceDevice();
+                        if (sourceDevice != null) {
+                            Map<String, FileConstructor> deviceFiles = sourceDevice.getFiles();
+                            if (deviceFiles != null) {
+                                FileConstructor deviceFile = deviceFiles.get(fileName);
+                                if (deviceFile != null) {
+                                    String deviceData = deviceFile.getFileDetails();
+                                    if (deviceData != null) {
+                                        String filteredData = deviceData.replace("t", "").replace("T", "");
+                                        deviceFile.setFileDetails(filteredData);
+                                        fileTransfers.remove(entry.getKey());
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -3,6 +3,7 @@ package unsw.blackout;
 import unsw.response.models.EntityInfoResponse;
 import unsw.utils.Angle;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,10 @@ public abstract class SatelliteConstructor {
     private double satelliteHeight;
     private String satelliteType;
     private Angle satellitePosition;
+
+    private final int maxStorageSpace = 100;
+    private final int maxBandWidth = 100;
+    private int currentBandwidth = 0;
 
     private List<FileConstructor> fileList = new ArrayList<FileConstructor>();
 
@@ -53,6 +58,33 @@ public abstract class SatelliteConstructor {
     // adds respective file to device:
     public void addFile(FileConstructor file) {
         fileList.add(file);
+    }
+
+    // bandwidth, storage space and FileTransfer parameters:
+    public boolean hasEnoughBandwidth(int fileSize) {
+        return this.currentBandwidth + 1 <= this.maxBandWidth;
+    }
+
+    public boolean hasEnoughStorageSpace(int fileSize) {
+        int used = this.files.values().stream().mapToInt(FileConstructor::getFileSize).sum();
+        return used + fileSize <= this.maxStorageSpace;
+    }
+
+    public void startFileTransfer(FileConstructor file, DeviceConstructor sourceDevice) {
+        this.files.put(file.getFileName(), file);
+        FileTransfer transfer = new FileTransfer(file, sourceDevice, FileTransfer.Direction.DOWNLOAD);
+        this.fileTransfers.put(file.getFileName(), transfer);
+        this.currentBandwidth++;
+    }
+
+    public FileConstructor getFileByName(String fileName) {
+        for (FileConstructor file : this.fileList) {
+            if (file.getFileName().equals(fileName)) {
+                return file;
+            }
+        }
+
+        return null;
     }
 
     public abstract EntityInfoResponse getInfo();

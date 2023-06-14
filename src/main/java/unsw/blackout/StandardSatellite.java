@@ -22,7 +22,7 @@ public class StandardSatellite extends SatelliteConstructor {
 
     public void updatePosition() {
         Angle currentPosition = this.getSatellitePosition();
-        Angle updatedPosition = radianShift.add(currentPosition);
+        Angle updatedPosition = currentPosition.subtract(radianShift);
         this.setSatellitePosition(updatedPosition);
     }
 
