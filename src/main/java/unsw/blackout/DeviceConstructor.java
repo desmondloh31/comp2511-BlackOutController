@@ -13,6 +13,12 @@ public abstract class DeviceConstructor {
     private String deviceId;
     private Angle devicePosition;
 
+    protected int maxBandWidth;
+    protected int currentBandwidth;
+    protected int maxStorageSpace;
+    protected int usedStorageSpace;
+    private int maxFileCap;
+
     private List<FileConstructor> fileList = new ArrayList<FileConstructor>();
 
     // constructor for device constructor (i.e any device)
@@ -20,6 +26,57 @@ public abstract class DeviceConstructor {
         this.deviceType = deviceType;
         this.deviceId = deviceId;
         this.devicePosition = devicePosition;
+    }
+
+    public FileConstructor getFileByID(String fileName) {
+        for (FileConstructor file : this.fileList) {
+            if (file.getFileName().equals(fileName)) {
+                return file;
+            }
+        }
+        return null;
+    }
+
+    // bandwidth, storage space and FileTransfer parameters:
+    public int getAvailableBandwidth() {
+        return maxBandWidth - currentBandwidth;
+    }
+
+    public int getAvailableStorageSpace() {
+        return maxStorageSpace - usedStorageSpace;
+    }
+
+    public int getUsedBandwidth() {
+        return this.currentBandwidth;
+    }
+
+    public int getTotalBandwidth() {
+        return this.maxBandWidth;
+    }
+
+    public int getUsedStorage() {
+        int usedStorage = 0;
+        for (FileConstructor file : this.fileList) {
+            usedStorage += file.getFileSize();
+        }
+        return usedStorage;
+    }
+
+    public boolean hasEnoughBandwidth(int fileSize) {
+        return this.currentBandwidth + 1 <= this.maxBandWidth;
+    }
+
+    public boolean hasEnoughStorageSpace(int fileSize) {
+        int used = this.files.values().stream().mapToInt(FileConstructor::getFileSize).sum();
+        return used + fileSize <= this.maxStorageSpace;
+    }
+
+    public int getTotalFiles() {
+        return fileList.size();
+    }
+
+    public int getMaxFileCap() {
+        return maxFileCap;
     }
 
     // getters and setters for deviceType, deviceId, and devicePosition:
@@ -43,6 +100,16 @@ public abstract class DeviceConstructor {
     // adds respective file to device:
     public void addFile(FileConstructor file) {
         fileList.add(file);
+        currentBandwidth++;
+    }
+
+    // removes file from device:
+    public void removeFile(FileConstructor file) {
+        if (!fileList.contains(file)) {
+            return; // or throw an exception
+        }
+        fileList.remove(file);
+        currentBandwidth = Math.max(0, currentBandwidth - 1);
     }
 
     public abstract EntityInfoResponse getInfo();

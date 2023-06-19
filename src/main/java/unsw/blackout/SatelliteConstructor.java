@@ -3,7 +3,6 @@ package unsw.blackout;
 import unsw.response.models.EntityInfoResponse;
 import unsw.utils.Angle;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +14,11 @@ public abstract class SatelliteConstructor {
     private String satelliteType;
     private Angle satellitePosition;
 
-    private final int maxStorageSpace = 100;
-    private final int maxBandWidth = 100;
-    private int currentBandwidth = 0;
+    protected int maxBandWidth;
+    protected int currentBandwidth;
+    protected int maxStorageSpace;
+    protected int usedStorageSpace;
+    private int maxFileCap;
 
     private List<FileConstructor> fileList = new ArrayList<FileConstructor>();
 
@@ -27,6 +28,15 @@ public abstract class SatelliteConstructor {
         this.satelliteType = satelliteType;
         this.satelliteHeight = satelliteHeight;
         this.satellitePosition = satellitePosition;
+    }
+
+    public FileConstructor getFileByID(String fileName) {
+        for (FileConstructor file : this.fileList) {
+            if (file.getFileName().equals(fileName)) {
+                return file;
+            }
+        }
+        return null;
     }
 
     // getters and setters for satelliteConstructor:
@@ -58,9 +68,43 @@ public abstract class SatelliteConstructor {
     // adds respective file to device:
     public void addFile(FileConstructor file) {
         fileList.add(file);
+        currentBandwidth++;
+    }
+
+    // removes file from device:
+    public void removeFile(FileConstructor file) {
+        if (!fileList.contains(file)) {
+            return; // or throw an exception
+        }
+        fileList.remove(file);
+        currentBandwidth = Math.max(0, currentBandwidth - 1);
     }
 
     // bandwidth, storage space and FileTransfer parameters:
+    public int getAvailableBandwidth() {
+        return maxBandWidth - currentBandwidth;
+    }
+
+    public int getAvailableStorageSpace() {
+        return maxStorageSpace - usedStorageSpace;
+    }
+
+    public int getUsedBandwidth() {
+        return this.currentBandwidth;
+    }
+
+    public int getTotalBandwidth() {
+        return this.maxBandWidth;
+    }
+
+    public int getUsedStorage() {
+        int usedStorage = 0;
+        for (FileConstructor file : this.fileList) {
+            usedStorage += file.getFileSize();
+        }
+        return usedStorage;
+    }
+
     public boolean hasEnoughBandwidth(int fileSize) {
         return this.currentBandwidth + 1 <= this.maxBandWidth;
     }
@@ -68,6 +112,14 @@ public abstract class SatelliteConstructor {
     public boolean hasEnoughStorageSpace(int fileSize) {
         int used = this.files.values().stream().mapToInt(FileConstructor::getFileSize).sum();
         return used + fileSize <= this.maxStorageSpace;
+    }
+
+    public int getTotalFiles() {
+        return fileList.size();
+    }
+
+    public int getMaxFileCap() {
+        return maxFileCap;
     }
 
     public void startFileTransfer(FileConstructor file, DeviceConstructor sourceDevice) {

@@ -79,6 +79,8 @@ public class BlackoutController {
             satellites.add(new RelaySatellite(satelliteId, type, height, position));
         } else if (type.equals("TeleportingSatellite")) {
             satellites.add(new TeleportingSatellite(satelliteId, type, height, position));
+        } else if (type.equals("ElephantSatellite")) {
+            satellites.add(new ElephantSatellite(satelliteId, type, height, position));
         }
     }
 
@@ -120,6 +122,9 @@ public class BlackoutController {
         }
         FileConstructor file = new FileConstructor(filename, content);
         findDevice.addFile(file);
+        System.out.println("File size: " + file.getFileSize());
+        System.out.println("Available bandwidth before adding file: " + findDevice.getAvailableBandwidth());
+        System.out.println("Used bandwidth before adding file: " + findDevice.getUsedBandwidth());
 
     }
 
@@ -177,24 +182,128 @@ public class BlackoutController {
 
     public void sendFile(String fileName, String fromId, String toId) throws FileTransferException {
         // TODO: Task 2 c) // test:
-        Map<String, FileInfoResponse> senderFiles = getInfo(fromId).getFiles();
-        Map<String, FileInfoResponse> receiverFiles = getInfo(toId).getFiles();
-        FileInfoResponse senderFile = senderFiles.get(fileName);
-        if (senderFile == null) {
+        DeviceConstructor fromDevice = findDeviceById(fromId);
+        SatelliteConstructor fromSatellite = findSatelliteById(fromId);
+
+        DeviceConstructor toDevice = findDeviceById(toId);
+        SatelliteConstructor toSatellite = findSatelliteById(toId);
+        String noEntities = "Entities not found";
+
+        if (fromDevice != null && toDevice != null) {
+            sendFileBetweenDevices(fromDevice, toDevice, fileName);
+        } else if (fromDevice != null && toSatellite != null) {
+            sendFileFromDeviceToSatellite(fromDevice, toSatellite, fileName);
+        } else if (fromSatellite != null && toDevice != null) {
+            sendFileFromSatelliteToDevice(fromSatellite, toDevice, fileName);
+        } else if (fromSatellite != null && toSatellite != null) {
+            sendFileBetweenSatellites(fromSatellite, toSatellite, fileName);
+        } else {
+            throw new IllegalArgumentException(noEntities);
+        }
+
+    }
+
+    // Helper method to send file between devices:
+    private void sendFileBetweenDevices(DeviceConstructor fromDevice, DeviceConstructor toDevice, String fileName)
+            throws FileTransferException {
+        FileConstructor fileTransfer = fromDevice.getFileByID(fileName);
+        String maxFiles = "Max Files Reached";
+        String maxStorage = "Max Storage Reached";
+        if (fileTransfer == null) {
+            throw new FileTransferException.VirtualFileNotFoundException(fileName);
+        }
+        if (fromDevice.getUsedBandwidth() + fileTransfer.getFileSize() > fromDevice.getTotalBandwidth()) {
+            throw new FileTransferException.VirtualFileNoBandwidthException(fromDevice.getDeviceId());
+        }
+        if (toDevice.getAvailableBandwidth() < fileTransfer.getFileSize()) {
+            if (toDevice.getTotalFiles() >= toDevice.getMaxFileCap()) {
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
+            } else {
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
+            }
+        }
+        fromDevice.removeFile(fileTransfer);
+        toDevice.addFile(fileTransfer);
+    }
+
+    // Helper method to send file between satellites:
+    private void sendFileBetweenSatellites(SatelliteConstructor fromSatellite, SatelliteConstructor toSatellite,
+            String fileName) throws FileTransferException {
+        FileConstructor fileTransfer = fromSatellite.getFileByID(fileName);
+        String maxFiles = "Max Files Reached";
+        String maxStorage = "Max Storage Reached";
+        if (fileTransfer == null) {
+            throw new FileTransferException.VirtualFileNotFoundException(fileName);
+        }
+        if (fromSatellite.getUsedBandwidth() + fileTransfer.getFileSize() > fromSatellite.getTotalBandwidth()) {
+            throw new FileTransferException.VirtualFileNoBandwidthException(fromSatellite.getSatelliteId());
+        }
+        if (toSatellite.getAvailableBandwidth() < fileTransfer.getFileSize()) {
+            if (toSatellite.getTotalFiles() >= toSatellite.getMaxFileCap()) {
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
+            } else {
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
+            }
+        }
+        fromSatellite.removeFile(fileTransfer);
+        toSatellite.addFile(fileTransfer);
+    }
+
+    // Helper method to send file from Device to Satellite:
+    private void sendFileFromDeviceToSatellite(DeviceConstructor fromDevice, SatelliteConstructor toSatellite,
+            String fileName) throws FileTransferException {
+        FileConstructor fileTransfer = fromDevice.getFileByID(fileName);
+        String maxFiles = "Max Files Reached";
+        String maxStorage = "Max Storage Reached";
+
+        if (fileTransfer == null) {
             throw new FileTransferException.VirtualFileNotFoundException(fileName);
         }
 
-        if (receiverFiles.containsKey(fileName)) {
-            throw new FileTransferException.VirtualFileAlreadyExistsException(fileName);
+        if (fromDevice.getUsedBandwidth() + fileTransfer.getFileSize() > fromDevice.getTotalBandwidth()) {
+            throw new FileTransferException.VirtualFileNoBandwidthException(fromDevice.getDeviceId());
         }
 
-        SatelliteConstructor target = satellites.stream().filter(satellite -> satellite.getSatelliteId().equals(toId))
-                .findFirst().orElse(null);
-
-        if (target != null) {
-            FileConstructor file = target.getFileByName(fileName);
+        if (toSatellite.getAvailableBandwidth() < fileTransfer.getFileSize()) {
+            if (toSatellite.getTotalFiles() >= toSatellite.getMaxFileCap()) {
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
+            } else {
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
+            }
         }
 
+        fromDevice.removeFile(fileTransfer);
+        toSatellite.addFile(fileTransfer);
+        System.out.println("File size: " + fileTransfer.getFileSize());
+        System.out.println("Used bandwidth before transfer: " + fromDevice.getUsedBandwidth());
+        System.out.println("Total bandwidth: " + fromDevice.getTotalBandwidth());
+    }
+
+    // Helper method to send file From Satellite to Device:
+    private void sendFileFromSatelliteToDevice(SatelliteConstructor fromSatellite, DeviceConstructor toDevice,
+            String fileName) throws FileTransferException {
+        FileConstructor fileTransfer = fromSatellite.getFileByID(fileName);
+        String maxFiles = "Max Files Reached";
+        String maxStorage = "Max Storage Reached";
+
+        if (fileTransfer == null) {
+            throw new FileTransferException.VirtualFileNotFoundException(fileName);
+        }
+
+        if (fromSatellite.getUsedBandwidth() + fileTransfer.getFileSize() > fromSatellite.getTotalBandwidth()) {
+            throw new FileTransferException.VirtualFileNoBandwidthException(fromSatellite.getSatelliteId());
+        }
+
+        if (toDevice.getAvailableBandwidth() < fileTransfer.getFileSize()) {
+            if (toDevice.getTotalFiles() >= toDevice.getMaxFileCap()) {
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
+            } else {
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
+            }
+        }
+
+        fromSatellite.removeFile(fileTransfer);
+        toDevice.addFile(fileTransfer);
     }
 
     public void createDevice(String deviceId, String type, Angle position, boolean isMoving) {

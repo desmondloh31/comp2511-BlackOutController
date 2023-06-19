@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 public class TeleportingSatellite extends SatelliteConstructor {
     private static final double maxDistance = 200000;
     private static final double linearVelocity = 1000;
     private Angle radianShift = Angle.fromRadians(linearVelocity / MathsHelper.RADIUS_OF_JUPITER);
-    private boolean clockWiseShift = false;
+    private boolean isMovingAntiClokwise = true;
 
     public TeleportingSatellite(String satelliteId, String satelliteType, double satelliteHeight,
             Angle satellitePosition) {
@@ -22,27 +24,72 @@ public class TeleportingSatellite extends SatelliteConstructor {
     }
 
     public void updatePosition() {
-        Angle oldPosition = super.getSatellitePosition();
-        if (clockWiseShift) {
-            oldPosition = oldPosition.subtract(radianShift);
-        } else {
-            oldPosition = oldPosition.add(radianShift);
-        }
-        super.setSatellitePosition(oldPosition);
-
-        if (oldPosition.toDegrees() >= 180) {
-            super.setSatellitePosition(Angle.fromDegrees(0));
-            clockWiseShift = !clockWiseShift;
+        // Convert to positive degree value in the range of [0, 360]
+        Angle currentPosition = this.getSatellitePosition();
+        if (currentPosition.toDegrees() >= 205) {
             teleportSatellite();
+        } else {
+            moveSatellite();
         }
+    }
+
+    private void moveSatellite() {
+        Angle updatedPosition = this.getSatellitePosition().add(radianShift);
+        this.setSatellitePosition(updatedPosition);
+    }
+
+    private void teleportSatellite() {
+        this.setSatellitePosition(Angle.fromDegrees(0));
+        isMovingAntiClokwise = !isMovingAntiClokwise;
+        if (this.fileTransfers == null) {
+            return;
+        }
+        for (Iterator<Entry<String, FileTransfer>> iterator = this.fileTransfers.entrySet().iterator(); iterator
+                .hasNext();) {
+            Entry<String, FileTransfer> entry = iterator.next();
+            FileTransfer transfer = entry.getValue();
+            if (transfer == null) {
+                continue;
+            }
+            FileConstructor file = transfer.getFile();
+            if (file == null) {
+                continue;
+            }
+            String newFile = file.getFileDetails();
+            if (newFile == null) {
+                continue;
+            }
+            newFile = newFile.replace("t", "");
+            if (transfer.getDirection() == FileTransfer.Direction.UPLOAD) {
+                fileUpload(iterator, file, newFile, transfer);
+            } else if (transfer.getDirection() == FileTransfer.Direction.DOWNLOAD) {
+                fileDownload(file, newFile, transfer);
+            }
+
+        }
+    }
+
+    // Helper functions for fileUpload and fileDownload:
+    private void fileUpload(Iterator<Entry<String, FileTransfer>> iterator, FileConstructor file, String newFile,
+            FileTransfer transfer) {
+        iterator.remove();
+        this.files.remove(file.getFileName());
+        DeviceConstructor source = transfer.getSourceDevice();
+        if (source != null && source.getFiles() != null && source.getFiles().get(file.getFileName()) != null) {
+            source.getFiles().get(file.getFileName()).setFileDetails(newFile);
+        }
+    }
+
+    private void fileDownload(FileConstructor file, String newFile, FileTransfer transfer) {
+        file.setFileDetails(newFile);
+        transfer.setBytesTransferred(file.getFileSize());
     }
 
     public EntityInfoResponse getInfo() {
         String satelliteId = this.getSatelliteId();
         String satelliteType = this.getSatelliteType();
-        double satelliteHeight = this.getSatelliteHeight();
         Angle satellitePosition = this.getSatellitePosition();
-
+        double satelliteHeight = this.getSatelliteHeight();
         Map<String, FileInfoResponse> map = new HashMap<>();
         for (FileConstructor file : this.getFileList()) {
             String fileName = file.getFileName();
@@ -56,73 +103,18 @@ public class TeleportingSatellite extends SatelliteConstructor {
 
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
-        List<DeviceConstructor> devices = new ArrayList<DeviceConstructor>();
-        List<SatelliteConstructor> satellites = new ArrayList<SatelliteConstructor>();
-        devices = blackout.getDeviceList();
-        satellites = blackout.getSatelliteList();
-        for (SatelliteConstructor satellite : satellites) {
-            if (satellite.getSatelliteId().equals(super.getSatelliteId())) {
-                continue;
-            } else {
-                if (isSatelliteInRange(satellite) && isSatelliteVisible(satellite)) {
-                    list.add(satellite.getSatelliteId());
-                }
+        for (SatelliteConstructor satellite : blackout.getSatelliteList()) {
+            if (!satellite.getSatelliteId().equals(this.getSatelliteId()) && isSatelliteInRange(satellite)
+                    && isSatelliteVisible(satellite)) {
+                list.add(satellite.getSatelliteId());
             }
         }
-
-        for (DeviceConstructor device : devices) {
-            if (isDeviceVisible(device)) {
+        for (DeviceConstructor device : blackout.getDeviceList()) {
+            if (isDeviceInRange(device) && isDeviceVisible(device)) {
                 list.add(device.getDeviceId());
             }
         }
         return list;
-    }
-
-    // function to handle the teleporting method for the satellite:
-    public void teleportSatellite() {
-        if (Math.abs(this.getSatellitePosition().toDegrees() - 180) < 1e-6) {
-            this.setSatellitePosition(Angle.fromDegrees(0));
-        }
-        Map<String, FileTransfer> fileTransfers = this.getFileTransfers();
-        if (fileTransfers != null) {
-            for (Map.Entry<String, FileTransfer> entry : fileTransfers.entrySet()) {
-                FileTransfer transfer = entry.getValue();
-                if (transfer != null && transfer.isInProgress()) {
-                    if (transfer.getDirection() == FileTransfer.Direction.UPLOAD) {
-                        FileConstructor file = transfer.getFile();
-                        if (file != null) {
-                            String remainingData = file.getFileDetails();
-                            if (remainingData != null) {
-                                remainingData = remainingData.substring(transfer.getBytesTransferred());
-                                String filteredData = remainingData.replace("t", "").replace("T", "");
-                                file.setFileDetails(filteredData);
-                                transfer.setBytesTransferred(file.getFileSize());
-                            }
-                        }
-                    }
-                    // Handle device to satellite dataTransfer:
-                    else if (transfer.getDirection() == FileTransfer.Direction.DOWNLOAD) {
-                        String fileName = transfer.getFile().getFileName();
-                        this.getFiles().remove(fileName);
-                        DeviceConstructor sourceDevice = transfer.getSourceDevice();
-                        if (sourceDevice != null) {
-                            Map<String, FileConstructor> deviceFiles = sourceDevice.getFiles();
-                            if (deviceFiles != null) {
-                                FileConstructor deviceFile = deviceFiles.get(fileName);
-                                if (deviceFile != null) {
-                                    String deviceData = deviceFile.getFileDetails();
-                                    if (deviceData != null) {
-                                        String filteredData = deviceData.replace("t", "").replace("T", "");
-                                        deviceFile.setFileDetails(filteredData);
-                                        fileTransfers.remove(entry.getKey());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     // checks if device is in range:

@@ -18,16 +18,17 @@ public class RelaySatellite extends SatelliteConstructor {
     private static final double maxDistance = 300000;
     private static final double linearVelocity = 1500;
     private boolean directionShift = false;
-    private final Angle radianShift = Angle.fromRadians(linearVelocity / (RADIUS_OF_JUPITER * 1000));
+    private final Angle radianShift = Angle.fromRadians(linearVelocity / RADIUS_OF_JUPITER);
 
     public RelaySatellite(String satelliteId, String satelliteType, double satelliteHeight, Angle satellitePosition) {
         super(satelliteId, "RelaySatellite", satelliteHeight, satellitePosition);
-        if (satellitePosition.toDegrees() < 140 || satellitePosition.toDegrees() > 345) {
+        if (satellitePosition.toDegrees() <= 180) {
             directionShift = true;
         }
     }
 
     public void updatePosition() {
+        System.out.println("Update position started. Current position: " + this.getSatellitePosition());
         Angle currentPosition = super.getSatellitePosition();
         if (currentPosition.toDegrees() <= 140) {
             increment(currentPosition);
@@ -42,6 +43,7 @@ public class RelaySatellite extends SatelliteConstructor {
                 increment(currentPosition);
             }
         }
+        System.out.println("Update position ended. New position: " + this.getSatellitePosition());
 
     }
 
@@ -50,6 +52,7 @@ public class RelaySatellite extends SatelliteConstructor {
         Angle increment = satellitePosition.add(radianShift);
         double newValue = new BigDecimal(increment.toRadians()).setScale(15, RoundingMode.HALF_UP).doubleValue();
         increment = Angle.fromRadians(newValue);
+        System.out.println("Increment: Old position: " + satellitePosition + ", New position: " + increment);
         this.setSatellitePosition(increment);
     }
 
@@ -58,6 +61,7 @@ public class RelaySatellite extends SatelliteConstructor {
         Angle decrement = satellitePosition.subtract(radianShift);
         double newValue = new BigDecimal(decrement.toRadians()).setScale(15, RoundingMode.HALF_UP).doubleValue();
         decrement = Angle.fromRadians(newValue);
+        System.out.println("Decrement: Old position: " + satellitePosition + ", New position: " + decrement);
         this.setSatellitePosition(decrement);
     }
 

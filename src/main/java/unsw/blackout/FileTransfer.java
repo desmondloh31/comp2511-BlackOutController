@@ -9,12 +9,14 @@ public class FileTransfer {
     private DeviceConstructor sourceDevice;
     private Direction direction;
     private int bytesTransferred;
+    private int bytesRemaining;
 
     public FileTransfer(FileConstructor file, DeviceConstructor sourceDevice, Direction direction) {
         this.file = file;
         this.sourceDevice = sourceDevice;
         this.direction = direction;
         this.bytesTransferred = 0;
+        this.bytesRemaining = 0;
     }
 
     // Getter for file
@@ -55,6 +57,14 @@ public class FileTransfer {
     // Setter for bytesTransferred
     public void setBytesTransferred(int bytesTransferred) {
         this.bytesTransferred = bytesTransferred;
+    }
+
+    public int getBytesRemaining() {
+        return this.bytesRemaining;
+    }
+
+    public void setBytesRemaining(int bytesRemaining) {
+        this.bytesRemaining = bytesRemaining;
     }
 
     // Check if the transfer is in progress

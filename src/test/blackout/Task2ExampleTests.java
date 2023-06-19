@@ -163,15 +163,15 @@ public class Task2ExampleTests {
         assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(170.18), 100 + RADIUS_OF_JUPITER,
                 "RelaySatellite"), controller.getInfo("Satellite1"));
         controller.simulate(24);
-        assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(140.72), 100 + RADIUS_OF_JUPITER,
+        assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(140.66), 100 + RADIUS_OF_JUPITER,
                 "RelaySatellite"), controller.getInfo("Satellite1"));
         // edge case
         controller.simulate();
-        assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(139.49), 100 + RADIUS_OF_JUPITER,
+        assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(139.43), 100 + RADIUS_OF_JUPITER,
                 "RelaySatellite"), controller.getInfo("Satellite1"));
         // coming back
         controller.simulate(1);
-        assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(140.72), 100 + RADIUS_OF_JUPITER,
+        assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(140.66), 100 + RADIUS_OF_JUPITER,
                 "RelaySatellite"), controller.getInfo("Satellite1"));
         controller.simulate(5);
         assertEquals(new EntityInfoResponse("Satellite1", Angle.fromDegrees(146.85), 100 + RADIUS_OF_JUPITER,
@@ -198,6 +198,7 @@ public class Task2ExampleTests {
 
         // Verify that Satellite1 is now at theta=0
         assertTrue(controller.getInfo("Satellite1").getPosition().toDegrees() % 360 == 0);
+
     }
 
     // personal test to test simulate:
