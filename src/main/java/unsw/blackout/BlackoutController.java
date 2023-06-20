@@ -27,7 +27,7 @@ public class BlackoutController {
     }
 
     // Helper function that finds device By Id:
-    private DeviceConstructor findDeviceById(String deviceId) {
+    public DeviceConstructor findDeviceById(String deviceId) {
         for (DeviceConstructor device : this.devices) {
             if (device.getDeviceId().equals(deviceId)) {
                 return device;
@@ -37,7 +37,7 @@ public class BlackoutController {
     }
 
     // Helper function that finds satellite by Id:
-    private SatelliteConstructor findSatelliteById(String satelliteId) {
+    public SatelliteConstructor findSatelliteById(String satelliteId) {
         for (SatelliteConstructor satellite : this.satellites) {
             if (satellite.getSatelliteId().equals(satelliteId)) {
                 return satellite;

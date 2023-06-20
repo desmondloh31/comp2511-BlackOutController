@@ -19,25 +19,39 @@ public class ElephantSatellite extends SatelliteConstructor {
     private static final int maxStorage = 90;
     private static final int bytesRecieved = 20;
     private static final int bytesSent = 20;
+    private int currentDownloadBandwidth;
+    private int currentUploadBandwidth;
     private Angle radianShift = Angle.fromRadians(linearVelocity / MathsHelper.RADIUS_OF_JUPITER);
 
     private Map<String, FileTransfer> transientFiles;
     private Map<String, FileTransfer> fileTransfers;
+    List<DeviceConstructor> devices = new ArrayList<DeviceConstructor>();
+    List<SatelliteConstructor> satellites = new ArrayList<SatelliteConstructor>();
 
     public ElephantSatellite(String satelliteId, String satelliteType, double satelliteHeight,
             Angle satellitePosition) {
         super(satelliteId, "ElephantSatellite", satelliteHeight, satellitePosition);
         this.transientFiles = new HashMap<>();
         this.fileTransfers = new HashMap<>();
+        this.currentDownloadBandwidth = 0;
+        this.currentUploadBandwidth = 0;
     }
 
     public void updatePosition() {
         Angle updatedPosition = this.getSatellitePosition().add(radianShift);
         this.setSatellitePosition(updatedPosition);
         for (Map.Entry<String, FileTransfer> entry : this.fileTransfers.entrySet()) {
-            handleFileTransfer(entry.getValue());
+            FileTransfer transfer = entry.getValue();
+            if (transfer.getDirection() == FileTransfer.Direction.UPLOAD) {
+                DeviceConstructor device = findDeviceById(transfer.getTargetId());
+                SatelliteConstructor satellite = findSatelliteById(transfer.getTargetId());
+                if (device != null && !isDeviceVisible(device) || satellite != null && !isSatelliteVisible(satellite)) {
+                    transfer.setBytesTransferred(0);
+                    transfer.setBytesRemaining(transfer.getFile().getFileSize());
+                }
+            }
+            handleFileTransfer(transfer);
         }
-
     }
 
     public EntityInfoResponse getInfo() {
@@ -118,29 +132,45 @@ public class ElephantSatellite extends SatelliteConstructor {
             }
         }
         transientFiles.keySet().removeIf(setKey -> !filesKept.contains(setKey));
+        for (String keptFile : filesKept) {
+            DeviceConstructor device = findDeviceById(transientFiles.get(keptFile).getTargetId());
+            SatelliteConstructor satellite = findSatelliteById(transientFiles.get(keptFile).getTargetId());
+            if ((device != null && isDeviceVisible(device)) || (satellite != null && isSatelliteVisible(satellite))) {
+                fileTransfers.put(keptFile, transientFiles.get(keptFile));
+                transientFiles.remove(keptFile);
+            }
+        }
     }
 
     private void processFileTransfer(FileTransfer transfer) {
-        // Download Request:
+        // conditions for download request:
         if (transfer.getDirection() == FileTransfer.Direction.DOWNLOAD) {
-            int storageToBeRecieved = Math.min(transfer.getBytesRemaining(), bytesRecieved);
-            transfer.setBytesTransferred(transfer.getBytesTransferred() + storageToBeRecieved);
-            transfer.setBytesRemaining(transfer.getBytesRemaining() - storageToBeRecieved);
-            // if download process is completed:
-            if (transfer.getBytesRemaining() == 0) {
-                FileConstructor downloadComplete = transfer.getFile();
-                this.files.put(downloadComplete.getFileName(), downloadComplete);
+            int bytesToBeRecieved = Math.min(transfer.getBytesRemaining(), bytesRecieved);
+            if (currentDownloadBandwidth + bytesToBeRecieved <= bytesRecieved) {
+                currentDownloadBandwidth += bytesToBeRecieved;
+                transfer.setBytesTransferred(transfer.getBytesTransferred() + bytesToBeRecieved);
+                transfer.setBytesRemaining(transfer.getBytesRemaining() - bytesToBeRecieved);
+                // condition if the download process is completed:
+                if (transfer.getBytesRemaining() == 0) {
+                    FileConstructor downloadComplete = transfer.getFile();
+                    this.files.put(downloadComplete.getFileName(), downloadComplete);
+                    currentDownloadBandwidth -= bytesToBeRecieved;
+                }
             }
         }
         // conditions for upload request:
         else if (transfer.getDirection() == FileTransfer.Direction.UPLOAD) {
-            int storageToSend = Math.min(transfer.getBytesRemaining(), bytesSent);
-            transfer.setBytesTransferred(transfer.getBytesTransferred() + storageToSend);
-            transfer.setBytesRemaining(transfer.getBytesRemaining() - storageToSend);
-            // condition if file upload has been completed:
-            if (transfer.getBytesRemaining() == 0) {
-                FileConstructor uploadComplete = transfer.getFile();
-                this.files.remove(uploadComplete.getFileName());
+            int bytesToSend = Math.min(transfer.getBytesRemaining(), bytesSent);
+            if (currentUploadBandwidth + bytesToSend <= bytesSent) {
+                currentUploadBandwidth += bytesToSend;
+                transfer.setBytesTransferred(transfer.getBytesTransferred() + bytesToSend);
+                transfer.setBytesRemaining(transfer.getBytesRemaining() - bytesToSend);
+                // conditions if file upload has been completed:
+                if (transfer.getBytesRemaining() == 0) {
+                    FileConstructor uploadComplete = transfer.getFile();
+                    this.files.remove(uploadComplete.getFileName());
+                    currentUploadBandwidth -= bytesToSend;
+                }
             }
         }
     }
@@ -166,5 +196,25 @@ public class ElephantSatellite extends SatelliteConstructor {
         return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
                 satellite.getSatelliteHeight(), satellite.getSatellitePosition());
 
+    }
+
+    // Helper function that finds device By Id:
+    private DeviceConstructor findDeviceById(String deviceId) {
+        for (DeviceConstructor device : this.devices) {
+            if (device.getDeviceId().equals(deviceId)) {
+                return device;
+            }
+        }
+        return null;
+    }
+
+    // Helper function that finds satellite by Id:
+    private SatelliteConstructor findSatelliteById(String satelliteId) {
+        for (SatelliteConstructor satellite : this.satellites) {
+            if (satellite.getSatelliteId().equals(satelliteId)) {
+                return satellite;
+            }
+        }
+        return null;
     }
 }
