@@ -53,7 +53,7 @@ public class StandardSatellite extends SatelliteConstructor {
                 list.add(satellite.getSatelliteId());
             }
         }
-        for (DeviceConstructor device : blackout.getDeviceList()) {
+        for (Device device : blackout.getDeviceList()) {
             if ((device.getDeviceType().equals("HandheldDevice") || device.getDeviceType().equals("LaptopDevice"))
                     && isDeviceInRange(device) && isDeviceVisible(device)) {
                 list.add(device.getDeviceId());
@@ -63,7 +63,7 @@ public class StandardSatellite extends SatelliteConstructor {
         return list;
     }
 
-    public boolean isDeviceInRange(DeviceConstructor device) {
+    public boolean isDeviceInRange(Device device) {
         double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
                 device.getDevicePosition());
         return distance <= maxDistance;
@@ -75,7 +75,7 @@ public class StandardSatellite extends SatelliteConstructor {
         return distance <= maxDistance;
     }
 
-    public boolean isDeviceVisible(DeviceConstructor device) {
+    public boolean isDeviceVisible(Device device) {
         return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
                 device.getDevicePosition());
     }

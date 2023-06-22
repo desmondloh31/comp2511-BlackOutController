@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static unsw.utils.MathsHelper.RADIUS_OF_JUPITER;
 
-public class HandheldDevice extends DeviceConstructor {
+public class HandheldDevice extends Device {
     private final float maxDistance = 50000;
 
     public HandheldDevice(String deviceId, String deviceType, Angle devicePosition) {

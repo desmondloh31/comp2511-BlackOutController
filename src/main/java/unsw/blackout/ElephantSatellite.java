@@ -25,7 +25,7 @@ public class ElephantSatellite extends SatelliteConstructor {
 
     private Map<String, FileTransfer> transientFiles;
     private Map<String, FileTransfer> fileTransfers;
-    List<DeviceConstructor> devices = new ArrayList<DeviceConstructor>();
+    List<Device> devices = new ArrayList<Device>();
     List<SatelliteConstructor> satellites = new ArrayList<SatelliteConstructor>();
 
     public ElephantSatellite(String satelliteId, String satelliteType, double satelliteHeight,
@@ -43,7 +43,7 @@ public class ElephantSatellite extends SatelliteConstructor {
         for (Map.Entry<String, FileTransfer> entry : this.fileTransfers.entrySet()) {
             FileTransfer transfer = entry.getValue();
             if (transfer.getDirection() == FileTransfer.Direction.UPLOAD) {
-                DeviceConstructor device = findDeviceById(transfer.getTargetId());
+                Device device = findDeviceById(transfer.getTargetId());
                 SatelliteConstructor satellite = findSatelliteById(transfer.getTargetId());
                 if (device != null && !isDeviceVisible(device) || satellite != null && !isSatelliteVisible(satellite)) {
                     transfer.setBytesTransferred(0);
@@ -78,7 +78,7 @@ public class ElephantSatellite extends SatelliteConstructor {
                 list.add(satellite.getSatelliteId());
             }
         }
-        for (DeviceConstructor device : blackout.getDeviceList()) {
+        for (Device device : blackout.getDeviceList()) {
             if ((device.getDeviceType().equals("LaptopDevice") || device.getDeviceType().equals("DesktopDevice"))
                     && isDeviceInRange(device) && isDeviceVisible(device)) {
                 list.add(device.getDeviceId());
@@ -133,7 +133,7 @@ public class ElephantSatellite extends SatelliteConstructor {
         }
         transientFiles.keySet().removeIf(setKey -> !filesKept.contains(setKey));
         for (String keptFile : filesKept) {
-            DeviceConstructor device = findDeviceById(transientFiles.get(keptFile).getTargetId());
+            Device device = findDeviceById(transientFiles.get(keptFile).getTargetId());
             SatelliteConstructor satellite = findSatelliteById(transientFiles.get(keptFile).getTargetId());
             if ((device != null && isDeviceVisible(device)) || (satellite != null && isSatelliteVisible(satellite))) {
                 fileTransfers.put(keptFile, transientFiles.get(keptFile));
@@ -175,7 +175,7 @@ public class ElephantSatellite extends SatelliteConstructor {
         }
     }
 
-    public boolean isDeviceInRange(DeviceConstructor device) {
+    public boolean isDeviceInRange(Device device) {
         double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
                 device.getDevicePosition());
         return distance <= maxDistance;
@@ -187,7 +187,7 @@ public class ElephantSatellite extends SatelliteConstructor {
         return distance <= maxDistance;
     }
 
-    public boolean isDeviceVisible(DeviceConstructor device) {
+    public boolean isDeviceVisible(Device device) {
         return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
                 device.getDevicePosition());
     }
@@ -199,8 +199,8 @@ public class ElephantSatellite extends SatelliteConstructor {
     }
 
     // Helper function that finds device By Id:
-    private DeviceConstructor findDeviceById(String deviceId) {
-        for (DeviceConstructor device : this.devices) {
+    private Device findDeviceById(String deviceId) {
+        for (Device device : this.devices) {
             if (device.getDeviceId().equals(deviceId)) {
                 return device;
             }

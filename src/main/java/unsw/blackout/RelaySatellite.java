@@ -90,7 +90,7 @@ public class RelaySatellite extends SatelliteConstructor {
                 list.add(satellite.getSatelliteId());
             }
         }
-        for (DeviceConstructor device : blackout.getDeviceList()) {
+        for (Device device : blackout.getDeviceList()) {
             if (isDeviceInRange(device) && isDeviceVisible(device)) {
                 list.add(device.getDeviceId());
             }
@@ -99,7 +99,7 @@ public class RelaySatellite extends SatelliteConstructor {
     }
 
     // checks if device is in range:
-    public boolean isDeviceInRange(DeviceConstructor device) {
+    public boolean isDeviceInRange(Device device) {
         double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
                 device.getDevicePosition());
         return distance <= maxDistance;
@@ -113,7 +113,7 @@ public class RelaySatellite extends SatelliteConstructor {
     }
 
     // checks if device is visible:
-    public boolean isDeviceVisible(DeviceConstructor device) {
+    public boolean isDeviceVisible(Device device) {
         return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
                 device.getDevicePosition());
     }

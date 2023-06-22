@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static unsw.utils.MathsHelper.RADIUS_OF_JUPITER;
 
-public class DesktopDevice extends DeviceConstructor {
+public class DesktopDevice extends Device {
     private final double maxDistance = 200000;
 
     public DesktopDevice(String deviceId, String deviceType, Angle devicePosition) {

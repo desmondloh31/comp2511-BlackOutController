@@ -14,11 +14,11 @@ import unsw.response.models.FileInfoResponse;
 import unsw.utils.Angle;
 
 public class BlackoutController {
-    List<DeviceConstructor> devices = new ArrayList<DeviceConstructor>();
+    List<Device> devices = new ArrayList<Device>();
     List<SatelliteConstructor> satellites = new ArrayList<SatelliteConstructor>();
 
     // Helper functions for getting the deviceList and getting the satelliteList:
-    public List<DeviceConstructor> getDeviceList() {
+    public List<Device> getDeviceList() {
         return devices;
     }
 
@@ -27,8 +27,8 @@ public class BlackoutController {
     }
 
     // Helper function that finds device By Id:
-    public DeviceConstructor findDeviceById(String deviceId) {
-        for (DeviceConstructor device : this.devices) {
+    public Device findDeviceById(String deviceId) {
+        for (Device device : this.devices) {
             if (device.getDeviceId().equals(deviceId)) {
                 return device;
             }
@@ -61,9 +61,9 @@ public class BlackoutController {
 
     public void removeDevice(String deviceId) {
         // TODO: Task 1b)
-        Iterator<DeviceConstructor> deviceIterator = devices.iterator();
+        Iterator<Device> deviceIterator = devices.iterator();
         while (deviceIterator.hasNext()) {
-            DeviceConstructor device = deviceIterator.next();
+            Device device = deviceIterator.next();
             if (device.getDeviceId().equals(deviceId)) {
                 deviceIterator.remove();
                 break;
@@ -99,7 +99,7 @@ public class BlackoutController {
     public List<String> listDeviceIds() {
 
         List<String> allDeviceIds = new ArrayList<>();
-        for (DeviceConstructor deviceId : devices) {
+        for (Device deviceId : devices) {
             allDeviceIds.add(deviceId.getDeviceId());
         }
         return allDeviceIds;
@@ -116,7 +116,7 @@ public class BlackoutController {
 
     public void addFileToDevice(String deviceId, String filename, String content) {
         // TODO: Task 1g)
-        DeviceConstructor findDevice = findDeviceById(deviceId);
+        Device findDevice = findDeviceById(deviceId);
         if (findDevice == null) {
             throw new IllegalArgumentException("no device found with id: " + deviceId);
         }
@@ -130,7 +130,7 @@ public class BlackoutController {
 
     public EntityInfoResponse getInfo(String id) {
         // TODO: Task 1h)
-        DeviceConstructor device = findDeviceById(id);
+        Device device = findDeviceById(id);
         SatelliteConstructor satellite = findSatelliteById(id);
         if (device != null) {
             return device.getInfo();
@@ -170,7 +170,7 @@ public class BlackoutController {
         }
 
         if (EntitiesInRange.isEmpty()) {
-            for (DeviceConstructor device : devices) {
+            for (Device device : devices) {
                 if (device.getDeviceId().equalsIgnoreCase(id)) {
                     EntitiesInRange = device.updateList(this);
                     break;
@@ -182,10 +182,10 @@ public class BlackoutController {
 
     public void sendFile(String fileName, String fromId, String toId) throws FileTransferException {
         // TODO: Task 2 c) // test:
-        DeviceConstructor fromDevice = findDeviceById(fromId);
+        Device fromDevice = findDeviceById(fromId);
         SatelliteConstructor fromSatellite = findSatelliteById(fromId);
 
-        DeviceConstructor toDevice = findDeviceById(toId);
+        Device toDevice = findDeviceById(toId);
         SatelliteConstructor toSatellite = findSatelliteById(toId);
         String noEntities = "Entities not found";
 
@@ -204,7 +204,7 @@ public class BlackoutController {
     }
 
     // Helper method to send file between devices:
-    private void sendFileBetweenDevices(DeviceConstructor fromDevice, DeviceConstructor toDevice, String fileName)
+    private void sendFileBetweenDevices(Device fromDevice, Device toDevice, String fileName)
             throws FileTransferException {
         FileConstructor fileTransfer = fromDevice.getFileByID(fileName);
         String maxFiles = "Max Files Reached";
@@ -250,8 +250,8 @@ public class BlackoutController {
     }
 
     // Helper method to send file from Device to Satellite:
-    private void sendFileFromDeviceToSatellite(DeviceConstructor fromDevice, SatelliteConstructor toSatellite,
-            String fileName) throws FileTransferException {
+    private void sendFileFromDeviceToSatellite(Device fromDevice, SatelliteConstructor toSatellite, String fileName)
+            throws FileTransferException {
         FileConstructor fileTransfer = fromDevice.getFileByID(fileName);
         String maxFiles = "Max Files Reached";
         String maxStorage = "Max Storage Reached";
@@ -280,8 +280,8 @@ public class BlackoutController {
     }
 
     // Helper method to send file From Satellite to Device:
-    private void sendFileFromSatelliteToDevice(SatelliteConstructor fromSatellite, DeviceConstructor toDevice,
-            String fileName) throws FileTransferException {
+    private void sendFileFromSatelliteToDevice(SatelliteConstructor fromSatellite, Device toDevice, String fileName)
+            throws FileTransferException {
         FileConstructor fileTransfer = fromSatellite.getFileByID(fileName);
         String maxFiles = "Max Files Reached";
         String maxStorage = "Max Storage Reached";

@@ -122,7 +122,7 @@ public abstract class SatelliteConstructor {
         return maxFileCap;
     }
 
-    public void startFileTransfer(FileConstructor file, DeviceConstructor sourceDevice) {
+    public void startFileTransfer(FileConstructor file, Device sourceDevice) {
         this.files.put(file.getFileName(), file);
         FileTransfer transfer = new FileTransfer(file, sourceDevice, FileTransfer.Direction.DOWNLOAD);
         this.fileTransfers.put(file.getFileName(), transfer);

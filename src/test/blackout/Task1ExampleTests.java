@@ -7,7 +7,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import unsw.blackout.BlackoutController;
 import unsw.blackout.DesktopDevice;
-import unsw.blackout.DeviceConstructor;
+import unsw.blackout.Device;
 import unsw.response.models.EntityInfoResponse;
 import unsw.response.models.FileInfoResponse;
 import unsw.utils.Angle;
@@ -110,8 +110,8 @@ public class Task1ExampleTests {
         System.out.println("Size of device list: " + controller.getDeviceList().size());
 
         // Verify the device is in the controller's devices list
-        DeviceConstructor createdDevice = null;
-        for (DeviceConstructor device : controller.getDeviceList()) {
+        Device createdDevice = null;
+        for (Device device : controller.getDeviceList()) {
             System.out.println("Found device with ID: " + device.getDeviceId()); // Print all device IDs
             if (device.getDeviceId().equals(deviceId)) {
                 createdDevice = device;

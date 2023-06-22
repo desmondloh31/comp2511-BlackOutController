@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class DeviceConstructor {
+public abstract class Device {
     private String deviceType;
     private String deviceId;
     private Angle devicePosition;
@@ -22,7 +22,7 @@ public abstract class DeviceConstructor {
     private List<FileConstructor> fileList = new ArrayList<FileConstructor>();
 
     // constructor for device constructor (i.e any device)
-    public DeviceConstructor(String deviceType, String deviceId, Angle devicePosition) {
+    public Device(String deviceType, String deviceId, Angle devicePosition) {
         this.deviceType = deviceType;
         this.deviceId = deviceId;
         this.devicePosition = devicePosition;
@@ -119,7 +119,7 @@ public abstract class DeviceConstructor {
     protected Map<String, FileTransfer> fileTransfers;
     protected Map<String, FileConstructor> files;
 
-    public DeviceConstructor() {
+    public Device() {
         this.fileTransfers = new HashMap<>();
         this.files = new HashMap<>();
     }

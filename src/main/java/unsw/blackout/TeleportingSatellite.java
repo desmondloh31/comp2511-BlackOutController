@@ -74,7 +74,7 @@ public class TeleportingSatellite extends SatelliteConstructor {
             FileTransfer transfer) {
         iterator.remove();
         this.files.remove(file.getFileName());
-        DeviceConstructor source = transfer.getSourceDevice();
+        Device source = transfer.getSourceDevice();
         if (source != null && source.getFiles() != null && source.getFiles().get(file.getFileName()) != null) {
             source.getFiles().get(file.getFileName()).setFileDetails(newFile);
         }
@@ -109,7 +109,7 @@ public class TeleportingSatellite extends SatelliteConstructor {
                 list.add(satellite.getSatelliteId());
             }
         }
-        for (DeviceConstructor device : blackout.getDeviceList()) {
+        for (Device device : blackout.getDeviceList()) {
             if (isDeviceInRange(device) && isDeviceVisible(device)) {
                 list.add(device.getDeviceId());
             }
@@ -118,7 +118,7 @@ public class TeleportingSatellite extends SatelliteConstructor {
     }
 
     // checks if device is in range:
-    public boolean isDeviceInRange(DeviceConstructor device) {
+    public boolean isDeviceInRange(Device device) {
         double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
                 device.getDevicePosition());
         return distance <= maxDistance;
@@ -132,7 +132,7 @@ public class TeleportingSatellite extends SatelliteConstructor {
     }
 
     // checks if device is visible:
-    public boolean isDeviceVisible(DeviceConstructor device) {
+    public boolean isDeviceVisible(Device device) {
         return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
                 device.getDevicePosition());
     }

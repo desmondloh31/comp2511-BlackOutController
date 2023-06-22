@@ -6,13 +6,13 @@ public class FileTransfer {
     }
 
     private FileConstructor file;
-    private DeviceConstructor sourceDevice;
+    private Device sourceDevice;
     private Direction direction;
     private int bytesTransferred;
     private int bytesRemaining;
     private String targetId;
 
-    public FileTransfer(FileConstructor file, DeviceConstructor sourceDevice, Direction direction) {
+    public FileTransfer(FileConstructor file, Device sourceDevice, Direction direction) {
         this.file = file;
         this.sourceDevice = sourceDevice;
         this.direction = direction;
@@ -32,12 +32,12 @@ public class FileTransfer {
     }
 
     // Getter for sourceDevice
-    public DeviceConstructor getSourceDevice() {
+    public Device getSourceDevice() {
         return this.sourceDevice;
     }
 
     // Setter for sourceDevice
-    public void setSourceDevice(DeviceConstructor sourceDevice) {
+    public void setSourceDevice(Device sourceDevice) {
         this.sourceDevice = sourceDevice;
     }
 
