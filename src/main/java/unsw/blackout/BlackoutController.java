@@ -213,13 +213,13 @@ public class BlackoutController {
             throw new FileTransferException.VirtualFileNotFoundException(fileName);
         }
         if (fromDevice.getUsedBandwidth() + fileTransfer.getFileSize() > fromDevice.getTotalBandwidth()) {
-            throw new FileTransferException.VirtualFileNoBandwidthException(fromDevice.getDeviceId());
+            throw new FileTransferException.InsufficientBandwidthException(fromDevice.getDeviceId());
         }
         if (toDevice.getAvailableBandwidth() < fileTransfer.getFileSize()) {
             if (toDevice.getTotalFiles() >= toDevice.getMaxFileCap()) {
-                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
+                throw new FileTransferException.InsufficientStorageException(maxFiles);
             } else {
-                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
+                throw new FileTransferException.InsufficientStorageException(maxStorage);
             }
         }
         fromDevice.removeFile(fileTransfer);
@@ -236,13 +236,13 @@ public class BlackoutController {
             throw new FileTransferException.VirtualFileNotFoundException(fileName);
         }
         if (fromSatellite.getUsedBandwidth() + fileTransfer.getFileSize() > fromSatellite.getTotalBandwidth()) {
-            throw new FileTransferException.VirtualFileNoBandwidthException(fromSatellite.getSatelliteId());
+            throw new FileTransferException.InsufficientBandwidthException(fromSatellite.getSatelliteId());
         }
         if (toSatellite.getAvailableBandwidth() < fileTransfer.getFileSize()) {
             if (toSatellite.getTotalFiles() >= toSatellite.getMaxFileCap()) {
-                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
+                throw new FileTransferException.InsufficientStorageException(maxFiles);
             } else {
-                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
+                throw new FileTransferException.InsufficientStorageException(maxStorage);
             }
         }
         fromSatellite.removeFile(fileTransfer);
@@ -261,14 +261,14 @@ public class BlackoutController {
         }
 
         if (fromDevice.getUsedBandwidth() + fileTransfer.getFileSize() > fromDevice.getTotalBandwidth()) {
-            throw new FileTransferException.VirtualFileNoBandwidthException(fromDevice.getDeviceId());
+            throw new FileTransferException.InsufficientBandwidthException(fromDevice.getDeviceId());
         }
 
         if (toSatellite.getAvailableBandwidth() < fileTransfer.getFileSize()) {
             if (toSatellite.getTotalFiles() >= toSatellite.getMaxFileCap()) {
-                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
+                throw new FileTransferException.InsufficientStorageException(maxFiles);
             } else {
-                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
+                throw new FileTransferException.InsufficientStorageException(maxStorage);
             }
         }
 
@@ -291,14 +291,14 @@ public class BlackoutController {
         }
 
         if (fromSatellite.getUsedBandwidth() + fileTransfer.getFileSize() > fromSatellite.getTotalBandwidth()) {
-            throw new FileTransferException.VirtualFileNoBandwidthException(fromSatellite.getSatelliteId());
+            throw new FileTransferException.InsufficientBandwidthException(fromSatellite.getSatelliteId());
         }
 
         if (toDevice.getAvailableBandwidth() < fileTransfer.getFileSize()) {
             if (toDevice.getTotalFiles() >= toDevice.getMaxFileCap()) {
-                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
+                throw new FileTransferException.InsufficientStorageException(maxFiles);
             } else {
-                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
+                throw new FileTransferException.InsufficientStorageException(maxStorage);
             }
         }
 
