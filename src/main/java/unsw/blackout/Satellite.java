@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SatelliteConstructor {
+public abstract class Satellite {
     private String satelliteId;
     private double satelliteHeight;
     private String satelliteType;
@@ -22,8 +22,7 @@ public abstract class SatelliteConstructor {
 
     private List<FileConstructor> fileList = new ArrayList<FileConstructor>();
 
-    public SatelliteConstructor(String satelliteId, String satelliteType, double satelliteHeight,
-            Angle satellitePosition) {
+    public Satellite(String satelliteId, String satelliteType, double satelliteHeight, Angle satellitePosition) {
         this.satelliteId = satelliteId;
         this.satelliteType = satelliteType;
         this.satelliteHeight = satelliteHeight;
@@ -148,7 +147,7 @@ public abstract class SatelliteConstructor {
     protected Map<String, FileTransfer> fileTransfers;
     protected Map<String, FileConstructor> files;
 
-    public SatelliteConstructor() {
+    public Satellite() {
         this.fileTransfers = new HashMap<>();
         this.files = new HashMap<>();
     }

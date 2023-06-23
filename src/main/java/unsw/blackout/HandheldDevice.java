@@ -41,7 +41,7 @@ public class HandheldDevice extends Device {
 
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
-        for (SatelliteConstructor satellite : blackout.getSatelliteList()) {
+        for (Satellite satellite : blackout.getSatelliteList()) {
             if (withinVisibleRange(satellite)) {
                 list.add(satellite.getSatelliteId());
             }
@@ -49,7 +49,7 @@ public class HandheldDevice extends Device {
         return list;
     }
 
-    private boolean withinVisibleRange(SatelliteConstructor satellite) {
+    private boolean withinVisibleRange(Satellite satellite) {
         double distance = MathsHelper.getDistance(satellite.getSatelliteHeight(), satellite.getSatellitePosition(),
                 super.getDevicePosition());
         boolean visible = MathsHelper.isVisible(satellite.getSatelliteHeight(), satellite.getSatellitePosition(),

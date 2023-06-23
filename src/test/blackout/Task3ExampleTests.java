@@ -6,7 +6,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import unsw.blackout.BlackoutController;
 import unsw.blackout.FileTransferException;
-import unsw.blackout.SatelliteConstructor;
+import unsw.blackout.Satellite;
 import unsw.response.models.FileInfoResponse;
 import unsw.response.models.EntityInfoResponse;
 import unsw.utils.Angle;
@@ -30,12 +30,12 @@ public class Task3ExampleTests {
         BlackoutController controller = new BlackoutController();
         controller.createSatellite("Satellite1", "ElephantSatellite", 1000 + RADIUS_OF_JUPITER, Angle.fromDegrees(90));
 
-        SatelliteConstructor initialSatellite = controller.findSatelliteById("Satellite1");
+        Satellite initialSatellite = controller.findSatelliteById("Satellite1");
         Angle initialSatellitePosition = initialSatellite.getSatellitePosition();
 
         controller.simulate(5);
 
-        SatelliteConstructor updatedSatellite = controller.findSatelliteById("Satellite1");
+        Satellite updatedSatellite = controller.findSatelliteById("Satellite1");
         Angle updatedSatellitePosition = updatedSatellite.getSatellitePosition();
 
         assertNotEquals(initialSatellitePosition, updatedSatellitePosition);
@@ -49,7 +49,7 @@ public class Task3ExampleTests {
         controller.createSatellite("Satellite1", "ElephantSatellite", 1000 + RADIUS_OF_JUPITER, initialPosition);
         controller.simulate(5);
 
-        SatelliteConstructor updatedSatellite = controller.findSatelliteById("Satellite1");
+        Satellite updatedSatellite = controller.findSatelliteById("Satellite1");
         double observedSpeedPerMinute = (100.24441423972662 - initialPosition.toDegrees()) / 5;
         Angle expectedPosition = Angle.fromDegrees(initialPosition.toDegrees() + 5 * observedSpeedPerMinute);
         assertEquals(expectedPosition, updatedSatellite.getSatellitePosition());
@@ -63,7 +63,7 @@ public class Task3ExampleTests {
         controller.createSatellite("Satellite1", "ElephantSatellite", 1000 + RADIUS_OF_JUPITER, initialPosition);
         controller.simulate(15);
 
-        SatelliteConstructor updatedSatellite = controller.findSatelliteById("Satellite1");
+        Satellite updatedSatellite = controller.findSatelliteById("Satellite1");
         double updatedPosition = updatedSatellite.getSatellitePosition().toDegrees();
         assertTrue(updatedPosition >= 360 || updatedPosition < initialPosition.toDegrees());
     }

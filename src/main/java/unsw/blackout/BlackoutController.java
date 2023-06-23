@@ -15,14 +15,14 @@ import unsw.utils.Angle;
 
 public class BlackoutController {
     List<Device> devices = new ArrayList<Device>();
-    List<SatelliteConstructor> satellites = new ArrayList<SatelliteConstructor>();
+    List<Satellite> satellites = new ArrayList<Satellite>();
 
     // Helper functions for getting the deviceList and getting the satelliteList:
     public List<Device> getDeviceList() {
         return devices;
     }
 
-    public List<SatelliteConstructor> getSatelliteList() {
+    public List<Satellite> getSatelliteList() {
         return satellites;
     }
 
@@ -37,8 +37,8 @@ public class BlackoutController {
     }
 
     // Helper function that finds satellite by Id:
-    public SatelliteConstructor findSatelliteById(String satelliteId) {
-        for (SatelliteConstructor satellite : this.satellites) {
+    public Satellite findSatelliteById(String satelliteId) {
+        for (Satellite satellite : this.satellites) {
             if (satellite.getSatelliteId().equals(satelliteId)) {
                 return satellite;
             }
@@ -86,9 +86,9 @@ public class BlackoutController {
 
     public void removeSatellite(String satelliteId) {
 
-        Iterator<SatelliteConstructor> satelliteIterator = satellites.iterator();
+        Iterator<Satellite> satelliteIterator = satellites.iterator();
         while (satelliteIterator.hasNext()) {
-            SatelliteConstructor satellite = satelliteIterator.next();
+            Satellite satellite = satelliteIterator.next();
             if (satellite.getSatelliteId().equals(satelliteId)) {
                 satelliteIterator.remove();
                 break;
@@ -108,7 +108,7 @@ public class BlackoutController {
     public List<String> listSatelliteIds() {
 
         List<String> allSatelliteIds = new ArrayList<>();
-        for (SatelliteConstructor satelliteId : satellites) {
+        for (Satellite satelliteId : satellites) {
             allSatelliteIds.add(satelliteId.getSatelliteId());
         }
         return allSatelliteIds;
@@ -131,7 +131,7 @@ public class BlackoutController {
     public EntityInfoResponse getInfo(String id) {
         // TODO: Task 1h)
         Device device = findDeviceById(id);
-        SatelliteConstructor satellite = findSatelliteById(id);
+        Satellite satellite = findSatelliteById(id);
         if (device != null) {
             return device.getInfo();
         }
@@ -143,7 +143,7 @@ public class BlackoutController {
 
     public void simulate() {
         // TODO: Task 2a)
-        for (SatelliteConstructor satellite : satellites) {
+        for (Satellite satellite : satellites) {
             satellite.updatePosition();
         }
 
@@ -162,7 +162,7 @@ public class BlackoutController {
     public List<String> communicableEntitiesInRange(String id) {
         // TODO: Task 2 b)
         List<String> EntitiesInRange = new ArrayList<>();
-        for (SatelliteConstructor satellite : satellites) {
+        for (Satellite satellite : satellites) {
             if (satellite.getSatelliteId().equalsIgnoreCase(id)) {
                 EntitiesInRange = satellite.updateList(this);
                 break;
@@ -183,10 +183,10 @@ public class BlackoutController {
     public void sendFile(String fileName, String fromId, String toId) throws FileTransferException {
         // TODO: Task 2 c) // test:
         Device fromDevice = findDeviceById(fromId);
-        SatelliteConstructor fromSatellite = findSatelliteById(fromId);
+        Satellite fromSatellite = findSatelliteById(fromId);
 
         Device toDevice = findDeviceById(toId);
-        SatelliteConstructor toSatellite = findSatelliteById(toId);
+        Satellite toSatellite = findSatelliteById(toId);
         String noEntities = "Entities not found";
 
         if (fromDevice != null && toDevice != null) {
@@ -227,8 +227,8 @@ public class BlackoutController {
     }
 
     // Helper method to send file between satellites:
-    private void sendFileBetweenSatellites(SatelliteConstructor fromSatellite, SatelliteConstructor toSatellite,
-            String fileName) throws FileTransferException {
+    private void sendFileBetweenSatellites(Satellite fromSatellite, Satellite toSatellite, String fileName)
+            throws FileTransferException {
         FileConstructor fileTransfer = fromSatellite.getFileByID(fileName);
         String maxFiles = "Max Files Reached";
         String maxStorage = "Max Storage Reached";
@@ -250,7 +250,7 @@ public class BlackoutController {
     }
 
     // Helper method to send file from Device to Satellite:
-    private void sendFileFromDeviceToSatellite(Device fromDevice, SatelliteConstructor toSatellite, String fileName)
+    private void sendFileFromDeviceToSatellite(Device fromDevice, Satellite toSatellite, String fileName)
             throws FileTransferException {
         FileConstructor fileTransfer = fromDevice.getFileByID(fileName);
         String maxFiles = "Max Files Reached";
@@ -280,7 +280,7 @@ public class BlackoutController {
     }
 
     // Helper method to send file From Satellite to Device:
-    private void sendFileFromSatelliteToDevice(SatelliteConstructor fromSatellite, Device toDevice, String fileName)
+    private void sendFileFromSatelliteToDevice(Satellite fromSatellite, Device toDevice, String fileName)
             throws FileTransferException {
         FileConstructor fileTransfer = fromSatellite.getFileByID(fileName);
         String maxFiles = "Max Files Reached";

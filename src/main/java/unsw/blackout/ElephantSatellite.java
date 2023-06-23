@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-public class ElephantSatellite extends SatelliteConstructor {
+public class ElephantSatellite extends Satellite {
     private static final double maxDistance = 400000;
     private static final double linearVelocity = 2500;
     private static final int maxStorage = 90;
@@ -26,7 +26,7 @@ public class ElephantSatellite extends SatelliteConstructor {
     private Map<String, FileTransfer> transientFiles;
     private Map<String, FileTransfer> fileTransfers;
     List<Device> devices = new ArrayList<Device>();
-    List<SatelliteConstructor> satellites = new ArrayList<SatelliteConstructor>();
+    List<Satellite> satellites = new ArrayList<Satellite>();
 
     public ElephantSatellite(String satelliteId, String satelliteType, double satelliteHeight,
             Angle satellitePosition) {
@@ -44,7 +44,7 @@ public class ElephantSatellite extends SatelliteConstructor {
             FileTransfer transfer = entry.getValue();
             if (transfer.getDirection() == FileTransfer.Direction.UPLOAD) {
                 Device device = findDeviceById(transfer.getTargetId());
-                SatelliteConstructor satellite = findSatelliteById(transfer.getTargetId());
+                Satellite satellite = findSatelliteById(transfer.getTargetId());
                 if (device != null && !isDeviceVisible(device) || satellite != null && !isSatelliteVisible(satellite)) {
                     transfer.setBytesTransferred(0);
                     transfer.setBytesRemaining(transfer.getFile().getFileSize());
@@ -72,7 +72,7 @@ public class ElephantSatellite extends SatelliteConstructor {
 
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
-        for (SatelliteConstructor satellite : blackout.getSatelliteList()) {
+        for (Satellite satellite : blackout.getSatelliteList()) {
             if (!satellite.getSatelliteId().equals(this.getSatelliteId()) && isSatelliteInRange(satellite)
                     && isSatelliteVisible(satellite)) {
                 list.add(satellite.getSatelliteId());
@@ -134,7 +134,7 @@ public class ElephantSatellite extends SatelliteConstructor {
         transientFiles.keySet().removeIf(setKey -> !filesKept.contains(setKey));
         for (String keptFile : filesKept) {
             Device device = findDeviceById(transientFiles.get(keptFile).getTargetId());
-            SatelliteConstructor satellite = findSatelliteById(transientFiles.get(keptFile).getTargetId());
+            Satellite satellite = findSatelliteById(transientFiles.get(keptFile).getTargetId());
             if ((device != null && isDeviceVisible(device)) || (satellite != null && isSatelliteVisible(satellite))) {
                 fileTransfers.put(keptFile, transientFiles.get(keptFile));
                 transientFiles.remove(keptFile);
@@ -181,7 +181,7 @@ public class ElephantSatellite extends SatelliteConstructor {
         return distance <= maxDistance;
     }
 
-    public boolean isSatelliteInRange(SatelliteConstructor satellite) {
+    public boolean isSatelliteInRange(Satellite satellite) {
         double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
                 satellite.getSatelliteHeight(), satellite.getSatellitePosition());
         return distance <= maxDistance;
@@ -192,7 +192,7 @@ public class ElephantSatellite extends SatelliteConstructor {
                 device.getDevicePosition());
     }
 
-    public boolean isSatelliteVisible(SatelliteConstructor satellite) {
+    public boolean isSatelliteVisible(Satellite satellite) {
         return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
                 satellite.getSatelliteHeight(), satellite.getSatellitePosition());
 
@@ -209,8 +209,8 @@ public class ElephantSatellite extends SatelliteConstructor {
     }
 
     // Helper function that finds satellite by Id:
-    private SatelliteConstructor findSatelliteById(String satelliteId) {
-        for (SatelliteConstructor satellite : this.satellites) {
+    private Satellite findSatelliteById(String satelliteId) {
+        for (Satellite satellite : this.satellites) {
             if (satellite.getSatelliteId().equals(satelliteId)) {
                 return satellite;
             }

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StandardSatellite extends SatelliteConstructor {
+public class StandardSatellite extends Satellite {
     private static final double linearVelocity = 2500;
     private static final double maxDistance = 150000;
     private final Angle radianShift = Angle.fromRadians(linearVelocity / MathsHelper.RADIUS_OF_JUPITER);
@@ -47,7 +47,7 @@ public class StandardSatellite extends SatelliteConstructor {
 
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
-        for (SatelliteConstructor satellite : blackout.getSatelliteList()) {
+        for (Satellite satellite : blackout.getSatelliteList()) {
             if (!satellite.getSatelliteId().equals(this.getSatelliteId()) && isSatelliteInRange(satellite)
                     && isSatelliteVisible(satellite)) {
                 list.add(satellite.getSatelliteId());
@@ -69,7 +69,7 @@ public class StandardSatellite extends SatelliteConstructor {
         return distance <= maxDistance;
     }
 
-    public boolean isSatelliteInRange(SatelliteConstructor satellite) {
+    public boolean isSatelliteInRange(Satellite satellite) {
         double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
                 satellite.getSatelliteHeight(), satellite.getSatellitePosition());
         return distance <= maxDistance;
@@ -80,7 +80,7 @@ public class StandardSatellite extends SatelliteConstructor {
                 device.getDevicePosition());
     }
 
-    public boolean isSatelliteVisible(SatelliteConstructor satellite) {
+    public boolean isSatelliteVisible(Satellite satellite) {
         return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
                 satellite.getSatelliteHeight(), satellite.getSatellitePosition());
 
