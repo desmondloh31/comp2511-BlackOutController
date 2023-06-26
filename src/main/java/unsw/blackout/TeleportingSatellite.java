@@ -23,7 +23,7 @@ public class TeleportingSatellite extends Satellite {
         super(satelliteId, "TeleportingSatellite", satelliteHeight, satellitePosition);
     }
 
-    public void updatePosition() {
+    public void updateSatellitePosition() {
         Angle currentPosition = this.getSatellitePosition();
         if (currentPosition.toDegrees() >= 205) {
             teleportSatellite();

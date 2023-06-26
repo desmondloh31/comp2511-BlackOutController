@@ -144,7 +144,7 @@ public class BlackoutController {
     public void simulate() {
         // TODO: Task 2a)
         for (Satellite satellite : satelliteList) {
-            satellite.updatePosition();
+            satellite.updateSatellitePosition();
         }
 
     }

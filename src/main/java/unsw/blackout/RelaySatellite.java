@@ -27,7 +27,7 @@ public class RelaySatellite extends Satellite {
         }
     }
 
-    public void updatePosition() {
+    public void updateSatellitePosition() {
         System.out.println("Update position started. Current position: " + this.getSatellitePosition());
         Angle currentPosition = super.getSatellitePosition();
         if (currentPosition.toDegrees() <= 140) {

@@ -37,7 +37,7 @@ public class ElephantSatellite extends Satellite {
         this.currentUploadBandwidth = 0;
     }
 
-    public void updatePosition() {
+    public void updateSatellitePosition() {
         Angle updatedPosition = this.getSatellitePosition().add(radianShift);
         this.setSatellitePosition(updatedPosition);
         for (Map.Entry<String, FileTransfer> entry : this.fileTransfers.entrySet()) {

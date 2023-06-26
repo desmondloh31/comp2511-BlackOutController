@@ -20,7 +20,7 @@ public class StandardSatellite extends Satellite {
         super(satelliteId, "StandardSatellite", satelliteHeight, satellitePosition);
     }
 
-    public void updatePosition() {
+    public void updateSatellitePosition() {
         Angle currentPosition = this.getSatellitePosition();
         Angle updatedPosition = currentPosition.subtract(radianShift);
         this.setSatellitePosition(updatedPosition);

@@ -140,7 +140,7 @@ public abstract class Satellite {
 
     public abstract EntityInfoResponse getInfo();
 
-    public abstract void updatePosition();
+    public abstract void updateSatellitePosition();
 
     public abstract List<String> updateList(BlackoutController controller);
 
