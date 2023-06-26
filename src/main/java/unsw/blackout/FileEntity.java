@@ -3,11 +3,15 @@ package unsw.blackout;
 import unsw.response.models.EntityInfoResponse;
 import unsw.utils.Angle;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class FileEntity {
-    protected String id;
-    protected Angle position;
+    private String id;
+    private String type;
+    private Angle position;
 
     protected int maxBandWidth;
     protected int currentBandwidth;
@@ -19,12 +23,14 @@ public abstract class FileEntity {
     protected Map<String, FileTransfer> fileTransfers;
     protected Map<String, FileConstructor> files;
 
-    public FileEntity() {
+    public FileEntity(String id, String type, Angle position) {
+        this.id = id;
+        this.type = type;
+        this.position = position;
         this.fileTransfers = new HashMap<>();
         this.files = new HashMap<>();
     }
 
-    // Shared methods between Satellite and Device
     public FileConstructor getFileByID(String fileName) {
         for (FileConstructor file : this.fileList) {
             if (file.getFileName().equals(fileName)) {
@@ -34,6 +40,7 @@ public abstract class FileEntity {
         return null;
     }
 
+    // bandwidth, storage space and FileTransfer parameters:
     public int getAvailableBandwidth() {
         return maxBandWidth - currentBandwidth;
     }
@@ -75,16 +82,33 @@ public abstract class FileEntity {
         return maxFileCap;
     }
 
+    public String getId() {
+        return this.id;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public Angle getPosition() {
+        return this.position;
+    }
+
     public List<FileConstructor> getFileList() {
         return fileList;
     }
 
     public void addFile(FileConstructor file) {
         fileList.add(file);
+        currentBandwidth++;
     }
 
     public void removeFile(FileConstructor file) {
+        if (!fileList.contains(file)) {
+            return; // or throw an exception
+        }
         fileList.remove(file);
+        currentBandwidth = Math.max(0, currentBandwidth - 1);
     }
 
     public Map<String, FileTransfer> getFileTransfers() {
@@ -95,10 +119,7 @@ public abstract class FileEntity {
         return this.files;
     }
 
-    // Abstract methods that need to be implemented in child classes
     public abstract EntityInfoResponse getInfo();
-
-    public abstract void updatePosition();
 
     public abstract List<String> updateList(BlackoutController controller);
 }

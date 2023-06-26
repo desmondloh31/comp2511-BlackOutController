@@ -24,7 +24,6 @@ public class TeleportingSatellite extends Satellite {
     }
 
     public void updatePosition() {
-        // Convert to positive degree value in the range of [0, 360]
         Angle currentPosition = this.getSatellitePosition();
         if (currentPosition.toDegrees() >= 205) {
             teleportSatellite();
