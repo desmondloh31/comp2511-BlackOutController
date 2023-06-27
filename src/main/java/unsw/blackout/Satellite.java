@@ -81,11 +81,11 @@ public abstract class Satellite {
 
     // bandwidth, storage space and FileTransfer parameters:
     public int getAvailableBandwidth() {
-        return maxBandWidth - currentBandwidth;
+        return this.maxBandWidth - this.currentBandwidth;
     }
 
     public int getAvailableStorageSpace() {
-        return maxStorageSpace - usedStorageSpace;
+        return this.maxStorageSpace - this.usedStorageSpace;
     }
 
     public int getUsedBandwidth() {
@@ -118,7 +118,7 @@ public abstract class Satellite {
     }
 
     public int getMaxFileCap() {
-        return maxFileCap;
+        return this.maxFileCap;
     }
 
     public void startFileTransfer(FileConstructor file, Device sourceDevice) {

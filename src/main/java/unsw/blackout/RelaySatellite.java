@@ -28,7 +28,6 @@ public class RelaySatellite extends Satellite {
     }
 
     public void updateSatellitePosition() {
-        System.out.println("Update position started. Current position: " + this.getSatellitePosition());
         Angle currentPosition = super.getSatellitePosition();
         if (currentPosition.toDegrees() <= 140) {
             increment(currentPosition);
@@ -43,8 +42,6 @@ public class RelaySatellite extends Satellite {
                 increment(currentPosition);
             }
         }
-        System.out.println("Update position ended. New position: " + this.getSatellitePosition());
-
     }
 
     // increasing position of RelaySatellite:
@@ -52,7 +49,6 @@ public class RelaySatellite extends Satellite {
         Angle increment = satellitePosition.add(radianShift);
         double newValue = new BigDecimal(increment.toRadians()).setScale(15, RoundingMode.HALF_UP).doubleValue();
         increment = Angle.fromRadians(newValue);
-        System.out.println("Increment: Old position: " + satellitePosition + ", New position: " + increment);
         this.setSatellitePosition(increment);
     }
 
@@ -61,7 +57,6 @@ public class RelaySatellite extends Satellite {
         Angle decrement = satellitePosition.subtract(radianShift);
         double newValue = new BigDecimal(decrement.toRadians()).setScale(15, RoundingMode.HALF_UP).doubleValue();
         decrement = Angle.fromRadians(newValue);
-        System.out.println("Decrement: Old position: " + satellitePosition + ", New position: " + decrement);
         this.setSatellitePosition(decrement);
     }
 

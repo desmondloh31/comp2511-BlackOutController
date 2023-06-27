@@ -1,31 +1,31 @@
 package unsw.blackout;
 
 public class FileTransferException extends Exception {
-    public FileTransferException(String message) {
-        super(message);
+    public FileTransferException(String exceptionMessage) {
+        super(exceptionMessage);
     }
 
     public static class VirtualFileNotFoundException extends FileTransferException {
-        public VirtualFileNotFoundException(String message) {
-            super(message);
+        public VirtualFileNotFoundException(String exceptionMessage) {
+            super(exceptionMessage);
+        }
+    }
+
+    public static class VirtualFileNoBandwidthException extends FileTransferException {
+        public VirtualFileNoBandwidthException(String exceptionMessage) {
+            super(exceptionMessage);
         }
     }
 
     public static class VirtualFileAlreadyExistsException extends FileTransferException {
-        public VirtualFileAlreadyExistsException(String message) {
-            super(message);
+        public VirtualFileAlreadyExistsException(String exceptionMessage) {
+            super(exceptionMessage);
         }
     }
 
-    public static class InsufficientBandwidthException extends FileTransferException {
-        public InsufficientBandwidthException(String message) {
-            super(message);
-        }
-    }
-
-    public static class InsufficientStorageException extends FileTransferException {
-        public InsufficientStorageException(String message) {
-            super(message);
+    public static class VirtualFileNoStorageException extends FileTransferException {
+        public VirtualFileNoStorageException(String exceptionMessage) {
+            super(exceptionMessage);
         }
     }
 }

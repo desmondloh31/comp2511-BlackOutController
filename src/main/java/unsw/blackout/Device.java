@@ -26,6 +26,9 @@ public abstract class Device {
         this.deviceType = deviceType;
         this.deviceId = deviceId;
         this.devicePosition = devicePosition;
+        this.maxBandWidth = maxBandWidth;
+        this.maxStorageSpace = maxStorageSpace;
+        this.maxFileCap = maxFileCap;
     }
 
     public FileConstructor getFileByID(String fileName) {
@@ -39,11 +42,11 @@ public abstract class Device {
 
     // bandwidth, storage space and FileTransfer parameters:
     public int getAvailableBandwidth() {
-        return maxBandWidth - currentBandwidth;
+        return this.maxBandWidth - this.currentBandwidth;
     }
 
     public int getAvailableStorageSpace() {
-        return maxStorageSpace - usedStorageSpace;
+        return this.maxStorageSpace - this.usedStorageSpace;
     }
 
     public int getUsedBandwidth() {
@@ -76,7 +79,7 @@ public abstract class Device {
     }
 
     public int getMaxFileCap() {
-        return maxFileCap;
+        return this.maxFileCap;
     }
 
     // getters and setters for deviceType, deviceId, and devicePosition:

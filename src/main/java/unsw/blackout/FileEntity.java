@@ -23,12 +23,15 @@ public abstract class FileEntity {
     protected Map<String, FileTransfer> fileTransfers;
     protected Map<String, FileConstructor> files;
 
-    public FileEntity(String id, String type, Angle position) {
+    public FileEntity(String id, String type, Angle position, int maxBandWidth, int maxStorageSpace, int maxFileCap) {
         this.id = id;
         this.type = type;
         this.position = position;
         this.fileTransfers = new HashMap<>();
         this.files = new HashMap<>();
+        this.maxBandWidth = maxBandWidth;
+        this.maxStorageSpace = maxStorageSpace;
+        this.maxFileCap = maxFileCap;
     }
 
     public FileConstructor getFileByID(String fileName) {
@@ -83,15 +86,15 @@ public abstract class FileEntity {
     }
 
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getType() {
-        return this.type;
+        return type;
     }
 
     public Angle getPosition() {
-        return this.position;
+        return position;
     }
 
     public List<FileConstructor> getFileList() {

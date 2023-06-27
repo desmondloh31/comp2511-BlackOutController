@@ -4,10 +4,12 @@ import org.eclipse.jetty.websocket.common.frames.BinaryFrame;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.CsvParser;
 
 import unsw.blackout.BlackoutController;
 import unsw.blackout.DesktopDevice;
 import unsw.blackout.Device;
+import unsw.blackout.FileConstructor;
 import unsw.response.models.EntityInfoResponse;
 import unsw.response.models.FileInfoResponse;
 import unsw.utils.Angle;
@@ -15,10 +17,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static blackout.TestHelpers.assertListAreEqualIgnoringOrder;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -281,6 +287,121 @@ public class Task1ExampleTests {
         assertEquals(new EntityInfoResponse(device2, devicePosition2, RADIUS_OF_JUPITER, deviceType2,
                 expectedSecondaryAddition), controller.getInfo(device2));
 
+    }
+
+    @Test
+    public void testAddFileToDeviceWithValidDeviceId() {
+        BlackoutController controller = new BlackoutController();
+        controller.createDevice("device1", "HandheldDevice", Angle.fromDegrees(45));
+        controller.createDevice("device2", "DesktopDevice", Angle.fromDegrees(60));
+        controller.createDevice("device3", "LaptopDevice", Angle.fromDegrees(105));
+
+        controller.addFileToDevice("device1", "file1", "stuff1");
+        controller.addFileToDevice("device2", "file2", "stuff2");
+        controller.addFileToDevice("device3", "file3", "stuff3");
+
+        Device device1 = controller.findDeviceById("device1");
+        Device device2 = controller.findDeviceById("device2");
+        Device device3 = controller.findDeviceById("device3");
+
+        FileConstructor file1 = device1.getFileByID("file1");
+        FileConstructor file2 = device2.getFileByID("file2");
+        FileConstructor file3 = device3.getFileByID("file3");
+        assertNotNull(file1);
+        assertNotNull(file2);
+        assertNotNull(file3);
+
+        assertEquals("file1", file1.getFileName());
+        assertEquals("stuff1", file1.getFileDetails());
+
+        assertEquals("file2", file2.getFileName());
+        assertEquals("stuff2", file2.getFileDetails());
+
+        assertEquals("file3", file3.getFileName());
+        assertEquals("stuff3", file3.getFileDetails());
+
+    }
+
+    @Test
+    public void testAddFileToDeviceInvalidDeviceId() {
+        BlackoutController controller = new BlackoutController();
+        String deviceId = "device";
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+                () -> controller.addFileToDevice(deviceId, "file", "random"));
+
+        assertEquals("no device found with id: " + deviceId, thrown.getMessage());
+
+    }
+
+    @Test
+    public void testAddFileToDeviceInvalidSatelliteId() {
+        BlackoutController controller = new BlackoutController();
+
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+                () -> controller.addFileToDevice("satellite", "file", "random"));
+
+        assertEquals("no device found with id: " + "satellite", thrown.getMessage());
+    }
+
+    @Test
+    public void testGetInfoWithValidId() {
+        BlackoutController controller = new BlackoutController();
+        controller.createDevice("device1", "HandheldDevice", Angle.fromDegrees(45));
+        controller.createDevice("device2", "DesktopDevice", Angle.fromDegrees(60));
+        controller.createDevice("device3", "LaptopDevice", Angle.fromDegrees(105));
+
+        controller.createSatellite("Satellite1", "StandardSatellite", 500.0, Angle.fromDegrees(60));
+        controller.createSatellite("Satellite2", "RelaySatellite", 300.0, Angle.fromDegrees(300));
+        controller.createSatellite("Satellite3", "TeleportingSatellite", 360.0, Angle.fromDegrees(180));
+
+        EntityInfoResponse responseD1 = controller.getInfo("device1");
+        EntityInfoResponse responseD2 = controller.getInfo("device2");
+        EntityInfoResponse responseD3 = controller.getInfo("device3");
+
+        assertNotNull(responseD1);
+        assertNotNull(responseD2);
+        assertNotNull(responseD3);
+
+        assertEquals("device1", responseD1.getDeviceId());
+        assertEquals("device2", responseD2.getDeviceId());
+        assertEquals("device3", responseD3.getDeviceId());
+
+    }
+
+    @Test
+    public void testGetInfoInvalidId() {
+        BlackoutController controller = new BlackoutController();
+        EntityInfoResponse response = controller.getInfo("device");
+        assertNull(response);
+
+    }
+
+    @Test
+    public void testGetInfoWithValidSatelliteId() {
+        BlackoutController controller = new BlackoutController();
+        controller.createSatellite("satellite1", "StandardSatellite", 1000, Angle.fromDegrees(45));
+        controller.createSatellite("satellite2", "RelaySatellite", 1500, Angle.fromDegrees(60));
+        controller.createSatellite("satellite3", "TeleportingSatellite", 2500, Angle.fromDegrees(120));
+
+        EntityInfoResponse response1 = controller.getInfo("satellite1");
+        EntityInfoResponse response2 = controller.getInfo("satellite2");
+        EntityInfoResponse response3 = controller.getInfo("satellite3");
+
+        assertNotNull(response1);
+        assertNotNull(response2);
+        assertNotNull(response3);
+
+        assertEquals("satellite1", response1.getDeviceId());
+        assertEquals("satellite2", response2.getDeviceId());
+        assertEquals("satellite3", response3.getDeviceId());
+
+    }
+
+    @Test
+    public void testGetInfoInvalidSatelliteId() {
+        BlackoutController controller = new BlackoutController();
+        EntityInfoResponse response = controller.getInfo("satelliteTest");
+        assertNull(response);
     }
 
 }
