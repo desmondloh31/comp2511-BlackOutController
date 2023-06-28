@@ -30,92 +30,73 @@ public class RelaySatellite extends Satellite {
     public void updateSatellitePosition() {
         Angle currentPosition = super.getSatellitePosition();
         if (currentPosition.toDegrees() <= 140) {
-            increment(currentPosition);
+            currentPosition = RelayMovement(currentPosition, radianShift, false);
             directionShift = false;
-        } else if (currentPosition.toDegrees() >= 345) {
-            decrement(currentPosition);
+        } else if (currentPosition.toDegrees() > 345) {
+            currentPosition = RelayMovement(currentPosition, radianShift, true);
             directionShift = true;
         } else {
-            if (directionShift) {
-                decrement(currentPosition);
-            } else {
-                increment(currentPosition);
-            }
+            currentPosition = directionShift ? RelayMovement(currentPosition, radianShift, true)
+                    : RelayMovement(currentPosition, radianShift, false);
+
         }
+        this.setSatellitePosition(currentPosition);
     }
 
-    // increasing position of RelaySatellite:
-    private void increment(Angle satellitePosition) {
-        Angle increment = satellitePosition.add(radianShift);
-        double newValue = new BigDecimal(increment.toRadians()).setScale(15, RoundingMode.HALF_UP).doubleValue();
-        increment = Angle.fromRadians(newValue);
-        this.setSatellitePosition(increment);
+    private Angle RelayMovement(Angle satellitePosition, Angle angularShift, boolean decrement) {
+        Angle updatedPosition = decrement ? satellitePosition.subtract(angularShift)
+                : satellitePosition.add(angularShift);
+        double accurateDecimalValue = new BigDecimal(updatedPosition.toRadians()).setScale(15, RoundingMode.HALF_UP)
+                .doubleValue();
+        return Angle.fromRadians(accurateDecimalValue);
     }
 
-    // decreasing position of RelaySatellite:
-    private void decrement(Angle satellitePosition) {
-        Angle decrement = satellitePosition.subtract(radianShift);
-        double newValue = new BigDecimal(decrement.toRadians()).setScale(15, RoundingMode.HALF_UP).doubleValue();
-        decrement = Angle.fromRadians(newValue);
-        this.setSatellitePosition(decrement);
-    }
-
+    // method to get necessary satellite info:
     public EntityInfoResponse getInfo() {
-        String satelliteId = this.getSatelliteId();
-        String satelliteType = this.getSatelliteType();
-        double satelliteHeight = this.getSatelliteHeight();
-        Angle satellitePosition = this.getSatellitePosition();
-
         Map<String, FileInfoResponse> map = new HashMap<>();
         for (FileConstructor file : this.getFileList()) {
-            String fileName = file.getFileName();
-            String fileDetails = file.getFileDetails();
-            int fileSize = fileDetails.length();
-            FileInfoResponse fileInfo = new FileInfoResponse(fileName, fileDetails, fileSize, true);
-            map.put(fileName, fileInfo);
+            FileInfoResponse fileInfo = createResponse(file);
+            map.put(file.getFileName(), fileInfo);
         }
-        return new EntityInfoResponse(satelliteId, satellitePosition, satelliteHeight, satelliteType, map);
+        return new EntityInfoResponse(this.getSatelliteId(), this.getSatellitePosition(), this.getSatelliteHeight(),
+                this.getSatelliteType(), map);
+    }
+
+    // helper to generate a FileInfoResponse to be used to get Satellite Info in
+    // getInfo()
+    private FileInfoResponse createResponse(FileConstructor fileResponse) {
+        String fileName = fileResponse.getFileName();
+        String fileDetails = fileResponse.getFileDetails();
+        int fileSize = fileDetails.length();
+        return new FileInfoResponse(fileName, fileDetails, fileSize, true);
     }
 
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
         for (Satellite satellite : blackout.getSatelliteList()) {
-            if (!satellite.getSatelliteId().equals(this.getSatelliteId()) && isSatelliteInRange(satellite)
-                    && isSatelliteVisible(satellite)) {
+            if (!satellite.getSatelliteId().equals(this.getSatelliteId())
+                    && checkInRangeAndVisibility(satellite.getSatelliteHeight(), satellite.getSatellitePosition())) {
                 list.add(satellite.getSatelliteId());
             }
         }
         for (Device device : blackout.getDeviceList()) {
-            if (isDeviceInRange(device) && isDeviceVisible(device)) {
+            if (checkInRangeAndVisibility(device.getDevicePosition())) {
                 list.add(device.getDeviceId());
             }
         }
         return list;
     }
 
-    // checks if device is in range:
-    public boolean isDeviceInRange(Device device) {
-        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
-                device.getDevicePosition());
-        return distance <= maxDistance;
+    private boolean checkInRangeAndVisibility(Angle position) {
+        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(), position);
+        return distance <= maxDistance
+                && MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(), position);
     }
 
-    // checks if satellite is in range:
-    public boolean isSatelliteInRange(Satellite satellite) {
-        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
-                satellite.getSatelliteHeight(), satellite.getSatellitePosition());
-        return distance <= maxDistance;
-    }
-
-    // checks if device is visible:
-    public boolean isDeviceVisible(Device device) {
-        return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
-                device.getDevicePosition());
-    }
-
-    // checks if satellite is visible:
-    public boolean isSatelliteVisible(Satellite satellite) {
-        return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
-                satellite.getSatelliteHeight(), satellite.getSatellitePosition());
+    private boolean checkInRangeAndVisibility(double height, Angle position) {
+        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(), height,
+                position);
+        return distance <= maxDistance
+                && MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(), height, position);
     }
 }
