@@ -1,18 +1,11 @@
 package unsw.blackout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Iterator;
-import java.util.Map;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.nio.file.FileAlreadyExistsException;
 
 import unsw.response.models.EntityInfoResponse;
-import unsw.response.models.FileInfoResponse;
 import unsw.utils.Angle;
-import unsw.blackout.Entity;
 
 public class BlackoutController {
     List<Device> deviceList = new ArrayList<Device>();
