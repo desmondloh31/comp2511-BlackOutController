@@ -39,19 +39,19 @@ public abstract class Satellite {
     }
 
     // getters and setters for satelliteConstructor:
-    public String getSatelliteId() {
+    public String getId() {
         return this.satelliteId;
     }
 
-    public double getSatelliteHeight() {
+    public double getHeight() {
         return this.satelliteHeight;
     }
 
-    public String getSatelliteType() {
+    public String getType() {
         return this.satelliteType;
     }
 
-    public Angle getSatellitePosition() {
+    public Angle getPosition() {
         return this.satellitePosition;
     }
 

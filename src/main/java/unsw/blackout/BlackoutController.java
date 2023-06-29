@@ -24,7 +24,7 @@ public class BlackoutController {
     // Helper function that finds device By Id:
     public Device findDeviceById(String deviceId) {
         for (Device device : this.deviceList) {
-            if (device.getDeviceId().equals(deviceId)) {
+            if (device.getId().equals(deviceId)) {
                 return device;
             }
         }
@@ -34,7 +34,7 @@ public class BlackoutController {
     // Helper function that finds satellite by Id:
     public Satellite findSatelliteById(String satelliteId) {
         for (Satellite satellite : this.satelliteList) {
-            if (satellite.getSatelliteId().equals(satelliteId)) {
+            if (satellite.getId().equals(satelliteId)) {
                 return satellite;
             }
         }
@@ -67,7 +67,7 @@ public class BlackoutController {
         Iterator<Device> deviceIterator = deviceList.iterator();
         while (deviceIterator.hasNext()) {
             Device device = deviceIterator.next();
-            if (device.getDeviceId().equals(deviceId)) {
+            if (device.getId().equals(deviceId)) {
                 deviceIterator.remove();
                 break;
             }
@@ -92,7 +92,7 @@ public class BlackoutController {
         Iterator<Satellite> satelliteIterator = satelliteList.iterator();
         while (satelliteIterator.hasNext()) {
             Satellite satellite = satelliteIterator.next();
-            if (satellite.getSatelliteId().equals(satelliteId)) {
+            if (satellite.getId().equals(satelliteId)) {
                 satelliteIterator.remove();
                 break;
             }
@@ -103,7 +103,7 @@ public class BlackoutController {
 
         List<String> allDeviceIds = new ArrayList<>();
         for (Device deviceId : deviceList) {
-            allDeviceIds.add(deviceId.getDeviceId());
+            allDeviceIds.add(deviceId.getId());
         }
         return allDeviceIds;
     }
@@ -112,7 +112,7 @@ public class BlackoutController {
 
         List<String> allSatelliteIds = new ArrayList<>();
         for (Satellite satelliteId : satelliteList) {
-            allSatelliteIds.add(satelliteId.getSatelliteId());
+            allSatelliteIds.add(satelliteId.getId());
         }
         return allSatelliteIds;
     }
@@ -162,7 +162,7 @@ public class BlackoutController {
         // TODO: Task 2 b)
         List<String> EntitiesInRange = new ArrayList<>();
         for (Satellite satellite : satelliteList) {
-            if (satellite.getSatelliteId().equalsIgnoreCase(id)) {
+            if (satellite.getId().equalsIgnoreCase(id)) {
                 EntitiesInRange = satellite.updateList(this);
                 break;
             }
@@ -170,7 +170,7 @@ public class BlackoutController {
 
         if (EntitiesInRange.isEmpty()) {
             for (Device device : deviceList) {
-                if (device.getDeviceId().equalsIgnoreCase(id)) {
+                if (device.getId().equalsIgnoreCase(id)) {
                     EntitiesInRange = device.updateList(this);
                     break;
                 }

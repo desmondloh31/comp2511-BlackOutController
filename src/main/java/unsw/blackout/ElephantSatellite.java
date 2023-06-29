@@ -38,7 +38,7 @@ public class ElephantSatellite extends Satellite {
     }
 
     public void updateSatellitePosition() {
-        Angle updatedPosition = this.getSatellitePosition().add(radianShift);
+        Angle updatedPosition = this.getPosition().add(radianShift);
         this.setSatellitePosition(updatedPosition);
         for (Map.Entry<String, FileTransfer> entry : this.fileTransfers.entrySet()) {
             FileTransfer transfer = entry.getValue();
@@ -55,10 +55,10 @@ public class ElephantSatellite extends Satellite {
     }
 
     public EntityInfoResponse getInfo() {
-        String satelliteId = this.getSatelliteId();
-        String satelliteType = this.getSatelliteType();
-        Angle satellitePosition = this.getSatellitePosition();
-        double satelliteHeight = this.getSatelliteHeight();
+        String satelliteId = this.getId();
+        String satelliteType = this.getType();
+        Angle satellitePosition = this.getPosition();
+        double satelliteHeight = this.getHeight();
         Map<String, FileInfoResponse> map = new HashMap<>();
         for (FileConstructor file : this.getFileList()) {
             String fileName = file.getFileName();
@@ -73,15 +73,15 @@ public class ElephantSatellite extends Satellite {
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
         for (Satellite satellite : blackout.getSatelliteList()) {
-            if (!satellite.getSatelliteId().equals(this.getSatelliteId()) && isSatelliteInRange(satellite)
+            if (!satellite.getId().equals(this.getId()) && isSatelliteInRange(satellite)
                     && isSatelliteVisible(satellite)) {
-                list.add(satellite.getSatelliteId());
+                list.add(satellite.getId());
             }
         }
         for (Device device : blackout.getDeviceList()) {
-            if ((device.getDeviceType().equals("LaptopDevice") || device.getDeviceType().equals("DesktopDevice"))
+            if ((device.getType().equals("LaptopDevice") || device.getType().equals("DesktopDevice"))
                     && isDeviceInRange(device) && isDeviceVisible(device)) {
-                list.add(device.getDeviceId());
+                list.add(device.getId());
             }
         }
 
@@ -176,32 +176,30 @@ public class ElephantSatellite extends Satellite {
     }
 
     public boolean isDeviceInRange(Device device) {
-        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
-                device.getDevicePosition());
+        double distance = MathsHelper.getDistance(this.getHeight(), this.getPosition(), device.getPosition());
         return distance <= maxDistance;
     }
 
     public boolean isSatelliteInRange(Satellite satellite) {
-        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
-                satellite.getSatelliteHeight(), satellite.getSatellitePosition());
+        double distance = MathsHelper.getDistance(this.getHeight(), this.getPosition(), satellite.getHeight(),
+                satellite.getPosition());
         return distance <= maxDistance;
     }
 
     public boolean isDeviceVisible(Device device) {
-        return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
-                device.getDevicePosition());
+        return MathsHelper.isVisible(this.getHeight(), this.getPosition(), device.getPosition());
     }
 
     public boolean isSatelliteVisible(Satellite satellite) {
-        return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
-                satellite.getSatelliteHeight(), satellite.getSatellitePosition());
+        return MathsHelper.isVisible(this.getHeight(), this.getPosition(), satellite.getHeight(),
+                satellite.getPosition());
 
     }
 
     // Helper function that finds device By Id:
     private Device findDeviceById(String deviceId) {
         for (Device device : this.devices) {
-            if (device.getDeviceId().equals(deviceId)) {
+            if (device.getId().equals(deviceId)) {
                 return device;
             }
         }
@@ -211,7 +209,7 @@ public class ElephantSatellite extends Satellite {
     // Helper function that finds satellite by Id:
     private Satellite findSatelliteById(String satelliteId) {
         for (Satellite satellite : this.satellites) {
-            if (satellite.getSatelliteId().equals(satelliteId)) {
+            if (satellite.getId().equals(satelliteId)) {
                 return satellite;
             }
         }
