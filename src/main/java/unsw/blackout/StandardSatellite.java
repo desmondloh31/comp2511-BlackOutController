@@ -23,9 +23,9 @@ public class StandardSatellite extends Satellite {
 
     // updates the movement of the StandardSatellite Satellite type
     public void updateSatellitePosition() {
-        Angle currentPosition = this.getSatellitePosition();
+        Angle currentPosition = this.getPosition();
         Angle updatedPosition = currentPosition.subtract(radianShift);
-        this.setSatellitePosition(updatedPosition);
+        this.setPosition(updatedPosition);
     }
 
     // helper to generate a FileInfoResponse to be used to get Satellite Info in
@@ -45,8 +45,7 @@ public class StandardSatellite extends Satellite {
             FileInfoResponse info = createResponse(file);
             map.put(file.getFileName(), info);
         }
-        return new EntityInfoResponse(this.getSatelliteId(), this.getSatellitePosition(), this.getSatelliteHeight(),
-                this.getSatelliteType(), map);
+        return new EntityInfoResponse(this.getId(), this.getPosition(), this.getHeight(), this.getType(), map);
     }
 
     public List<String> updateList(BlackoutController blackout) {
@@ -58,32 +57,29 @@ public class StandardSatellite extends Satellite {
 
     private void updateSatelliteList(BlackoutController blackout, List<String> list) {
         for (Satellite satellite : blackout.getSatelliteList()) {
-            if (!satellite.getSatelliteId().equals(this.getSatelliteId())
-                    && checkInRangeAndVisibility(satellite.getSatelliteHeight(), satellite.getSatellitePosition())) {
-                list.add(satellite.getSatelliteId());
+            if (!satellite.getId().equals(this.getId())
+                    && checkInRangeAndVisibility(satellite.getHeight(), satellite.getPosition())) {
+                list.add(satellite.getId());
             }
         }
     }
 
     private void updateDeviceList(BlackoutController blackout, List<String> list) {
         for (Device device : blackout.getDeviceList()) {
-            if ((device.getDeviceType().equals("HandheldDevice") || device.getDeviceType().equals("LaptopDevice"))
-                    && checkInRangeAndVisibility(device.getDevicePosition())) {
-                list.add(device.getDeviceId());
+            if ((device.getType().equals("HandheldDevice") || device.getType().equals("LaptopDevice"))
+                    && checkInRangeAndVisibility(device.getPosition())) {
+                list.add(device.getId());
             }
         }
     }
 
     private boolean checkInRangeAndVisibility(Angle position) {
-        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(), position);
-        return distance <= maxDistance
-                && MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(), position);
+        double distance = MathsHelper.getDistance(this.getHeight(), this.getPosition(), position);
+        return distance <= maxDistance && MathsHelper.isVisible(this.getHeight(), this.getPosition(), position);
     }
 
     private boolean checkInRangeAndVisibility(double height, Angle position) {
-        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(), height,
-                position);
-        return distance <= maxDistance
-                && MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(), height, position);
+        double distance = MathsHelper.getDistance(this.getHeight(), this.getPosition(), height, position);
+        return distance <= maxDistance && MathsHelper.isVisible(this.getHeight(), this.getPosition(), height, position);
     }
 }

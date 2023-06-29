@@ -28,7 +28,7 @@ public class RelaySatellite extends Satellite {
     }
 
     public void updateSatellitePosition() {
-        Angle currentPosition = super.getSatellitePosition();
+        Angle currentPosition = super.getPosition();
         if (currentPosition.toDegrees() <= 140) {
             currentPosition = RelayMovement(currentPosition, radianShift, false);
             directionShift = false;
@@ -40,7 +40,7 @@ public class RelaySatellite extends Satellite {
                     : RelayMovement(currentPosition, radianShift, false);
 
         }
-        this.setSatellitePosition(currentPosition);
+        this.setPosition(currentPosition);
     }
 
     private Angle RelayMovement(Angle satellitePosition, Angle angularShift, boolean decrement) {
@@ -58,8 +58,7 @@ public class RelaySatellite extends Satellite {
             FileInfoResponse fileInfo = createResponse(file);
             map.put(file.getFileName(), fileInfo);
         }
-        return new EntityInfoResponse(this.getSatelliteId(), this.getSatellitePosition(), this.getSatelliteHeight(),
-                this.getSatelliteType(), map);
+        return new EntityInfoResponse(this.getId(), this.getPosition(), this.getHeight(), this.getType(), map);
     }
 
     // helper to generate a FileInfoResponse to be used to get Satellite Info in
@@ -74,29 +73,26 @@ public class RelaySatellite extends Satellite {
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
         for (Satellite satellite : blackout.getSatelliteList()) {
-            if (!satellite.getSatelliteId().equals(this.getSatelliteId())
-                    && checkInRangeAndVisibility(satellite.getSatelliteHeight(), satellite.getSatellitePosition())) {
-                list.add(satellite.getSatelliteId());
+            if (!satellite.getId().equals(this.getId())
+                    && checkInRangeAndVisibility(satellite.getHeight(), satellite.getPosition())) {
+                list.add(satellite.getId());
             }
         }
         for (Device device : blackout.getDeviceList()) {
-            if (checkInRangeAndVisibility(device.getDevicePosition())) {
-                list.add(device.getDeviceId());
+            if (checkInRangeAndVisibility(device.getPosition())) {
+                list.add(device.getId());
             }
         }
         return list;
     }
 
     private boolean checkInRangeAndVisibility(Angle position) {
-        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(), position);
-        return distance <= maxDistance
-                && MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(), position);
+        double distance = MathsHelper.getDistance(this.getHeight(), this.getPosition(), position);
+        return distance <= maxDistance && MathsHelper.isVisible(this.getHeight(), this.getPosition(), position);
     }
 
     private boolean checkInRangeAndVisibility(double height, Angle position) {
-        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(), height,
-                position);
-        return distance <= maxDistance
-                && MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(), height, position);
+        double distance = MathsHelper.getDistance(this.getHeight(), this.getPosition(), height, position);
+        return distance <= maxDistance && MathsHelper.isVisible(this.getHeight(), this.getPosition(), height, position);
     }
 }

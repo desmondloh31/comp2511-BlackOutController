@@ -24,7 +24,7 @@ public class BlackoutController {
     // Helper function that finds device By Id:
     public Device findDeviceById(String deviceId) {
         for (Device device : this.deviceList) {
-            if (device.getDeviceId().equals(deviceId)) {
+            if (device.getId().equals(deviceId)) {
                 return device;
             }
         }
@@ -34,7 +34,7 @@ public class BlackoutController {
     // Helper function that finds satellite by Id:
     public Satellite findSatelliteById(String satelliteId) {
         for (Satellite satellite : this.satelliteList) {
-            if (satellite.getSatelliteId().equals(satelliteId)) {
+            if (satellite.getId().equals(satelliteId)) {
                 return satellite;
             }
         }
@@ -63,7 +63,7 @@ public class BlackoutController {
     }
 
     public void removeDevice(String deviceId) {
-        deviceList.removeIf(device -> device.getDeviceId().equals(deviceId));
+        deviceList.removeIf(device -> device.getId().equals(deviceId));
     }
 
     public void createSatellite(String satelliteId, String type, double height, Angle position) {
@@ -80,15 +80,15 @@ public class BlackoutController {
     }
 
     public void removeSatellite(String satelliteId) {
-        satelliteList.removeIf(satellite -> satellite.getSatelliteId().equals(satelliteId));
+        satelliteList.removeIf(satellite -> satellite.getId().equals(satelliteId));
     }
 
     public List<String> listDeviceIds() {
-        return deviceList.stream().map(Device::getDeviceId).collect(Collectors.toList());
+        return deviceList.stream().map(Device::getId).collect(Collectors.toList());
     }
 
     public List<String> listSatelliteIds() {
-        return satelliteList.stream().map(Satellite::getSatelliteId).collect(Collectors.toList());
+        return satelliteList.stream().map(Satellite::getId).collect(Collectors.toList());
     }
 
     public void addFileToDevice(String deviceId, String filename, String content) {
@@ -136,7 +136,7 @@ public class BlackoutController {
         // TODO: Task 2 b)
         List<String> EntitiesInRange = new ArrayList<>();
         for (Satellite satellite : satelliteList) {
-            if (satellite.getSatelliteId().equalsIgnoreCase(id)) {
+            if (satellite.getId().equalsIgnoreCase(id)) {
                 EntitiesInRange = satellite.updateList(this);
                 break;
             }
@@ -144,7 +144,7 @@ public class BlackoutController {
 
         if (EntitiesInRange.isEmpty()) {
             for (Device device : deviceList) {
-                if (device.getDeviceId().equalsIgnoreCase(id)) {
+                if (device.getId().equalsIgnoreCase(id)) {
                     EntitiesInRange = device.updateList(this);
                     break;
                 }

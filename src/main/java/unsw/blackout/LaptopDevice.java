@@ -30,8 +30,7 @@ public class LaptopDevice extends Device {
             FileInfoResponse fileInfo = new FileInfoResponse((fileName), fileDetails, fileSize, true);
             map.put(fileName, fileInfo);
         }
-        return new EntityInfoResponse(super.getDeviceId(), super.getDevicePosition(), RADIUS_OF_JUPITER,
-                super.getDeviceType(), map);
+        return new EntityInfoResponse(super.getId(), super.getPosition(), RADIUS_OF_JUPITER, super.getType(), map);
     }
 
     public List<String> updateList(BlackoutController blackout) {
@@ -39,17 +38,15 @@ public class LaptopDevice extends Device {
         List<Satellite> satellites = blackout.getSatelliteList();
         for (Satellite satellite : satellites) {
             if (withinVisibleRange(satellite)) {
-                list.add(satellite.getSatelliteId());
+                list.add(satellite.getId());
             }
         }
         return list;
     }
 
     private boolean withinVisibleRange(Satellite satellite) {
-        double distance = MathsHelper.getDistance(satellite.getSatelliteHeight(), satellite.getSatellitePosition(),
-                super.getDevicePosition());
-        boolean visible = MathsHelper.isVisible(satellite.getSatelliteHeight(), satellite.getSatellitePosition(),
-                super.getDevicePosition());
+        double distance = MathsHelper.getDistance(satellite.getHeight(), satellite.getPosition(), super.getPosition());
+        boolean visible = MathsHelper.isVisible(satellite.getHeight(), satellite.getPosition(), super.getPosition());
         return distance <= maxDistance && visible;
     }
 }
