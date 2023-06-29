@@ -24,7 +24,7 @@ public class TeleportingSatellite extends Satellite {
     }
 
     public void updateSatellitePosition() {
-        Angle currentPosition = this.getPosition();
+        Angle currentPosition = this.getSatellitePosition();
         if (currentPosition.toDegrees() >= 205) {
             teleportSatellite();
         } else {
@@ -33,7 +33,7 @@ public class TeleportingSatellite extends Satellite {
     }
 
     private void moveSatellite() {
-        Angle updatedPosition = this.getPosition().add(radianShift);
+        Angle updatedPosition = this.getSatellitePosition().add(radianShift);
         this.setSatellitePosition(updatedPosition);
     }
 
@@ -85,10 +85,10 @@ public class TeleportingSatellite extends Satellite {
     }
 
     public EntityInfoResponse getInfo() {
-        String satelliteId = this.getId();
-        String satelliteType = this.getType();
-        Angle satellitePosition = this.getPosition();
-        double satelliteHeight = this.getHeight();
+        String satelliteId = this.getSatelliteId();
+        String satelliteType = this.getSatelliteType();
+        Angle satellitePosition = this.getSatellitePosition();
+        double satelliteHeight = this.getSatelliteHeight();
         Map<String, FileInfoResponse> map = new HashMap<>();
         for (FileConstructor file : this.getFileList()) {
             String fileName = file.getFileName();
@@ -103,14 +103,14 @@ public class TeleportingSatellite extends Satellite {
     public List<String> updateList(BlackoutController blackout) {
         List<String> list = new ArrayList<>();
         for (Satellite satellite : blackout.getSatelliteList()) {
-            if (!satellite.getId().equals(this.getId()) && isSatelliteInRange(satellite)
+            if (!satellite.getSatelliteId().equals(this.getSatelliteId()) && isSatelliteInRange(satellite)
                     && isSatelliteVisible(satellite)) {
-                list.add(satellite.getId());
+                list.add(satellite.getSatelliteId());
             }
         }
         for (Device device : blackout.getDeviceList()) {
             if (isDeviceInRange(device) && isDeviceVisible(device)) {
-                list.add(device.getId());
+                list.add(device.getDeviceId());
             }
         }
         return list;
@@ -118,25 +118,27 @@ public class TeleportingSatellite extends Satellite {
 
     // checks if device is in range:
     public boolean isDeviceInRange(Device device) {
-        double distance = MathsHelper.getDistance(this.getHeight(), this.getPosition(), device.getPosition());
+        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
+                device.getDevicePosition());
         return distance <= maxDistance;
     }
 
     // checks if satellite is in range:
     public boolean isSatelliteInRange(Satellite satellite) {
-        double distance = MathsHelper.getDistance(this.getHeight(), this.getPosition(), satellite.getHeight(),
-                satellite.getPosition());
+        double distance = MathsHelper.getDistance(this.getSatelliteHeight(), this.getSatellitePosition(),
+                satellite.getSatelliteHeight(), satellite.getSatellitePosition());
         return distance <= maxDistance;
     }
 
     // checks if device is visible:
     public boolean isDeviceVisible(Device device) {
-        return MathsHelper.isVisible(this.getHeight(), this.getPosition(), device.getPosition());
+        return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
+                device.getDevicePosition());
     }
 
     // checks if satellite is visible:
     public boolean isSatelliteVisible(Satellite satellite) {
-        return MathsHelper.isVisible(this.getHeight(), this.getPosition(), satellite.getHeight(),
-                satellite.getPosition());
+        return MathsHelper.isVisible(this.getSatelliteHeight(), this.getSatellitePosition(),
+                satellite.getSatelliteHeight(), satellite.getSatellitePosition());
     }
 }

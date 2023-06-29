@@ -83,15 +83,15 @@ public abstract class Device {
     }
 
     // getters and setters for deviceType, deviceId, and devicePosition:
-    public String getType() {
+    public String getDeviceType() {
         return this.deviceType;
     }
 
-    public String getId() {
+    public String getDeviceId() {
         return this.deviceId;
     }
 
-    public Angle getPosition() {
+    public Angle getDevicePosition() {
         return this.devicePosition;
     }
 

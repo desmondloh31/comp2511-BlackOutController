@@ -118,8 +118,8 @@ public class Task1ExampleTests {
         // Verify the device is in the controller's devices list
         Device createdDevice = null;
         for (Device device : controller.getDeviceList()) {
-            System.out.println("Found device with ID: " + device.getId()); // Print all device IDs
-            if (device.getId().equals(deviceId)) {
+            System.out.println("Found device with ID: " + device.getDeviceId()); // Print all device IDs
+            if (device.getDeviceId().equals(deviceId)) {
                 createdDevice = device;
                 break;
             }
@@ -129,9 +129,9 @@ public class Task1ExampleTests {
         assertNotNull(createdDevice, "The device was not created");
 
         // Check the createdDevice has the expected properties
-        assertEquals(deviceId, createdDevice.getId(), "Device ID does not match");
-        assertEquals(deviceType, createdDevice.getType(), "Device type does not match");
-        assertEquals(devicePosition, createdDevice.getPosition(), "Device position does not match");
+        assertEquals(deviceId, createdDevice.getDeviceId(), "Device ID does not match");
+        assertEquals(deviceType, createdDevice.getDeviceType(), "Device type does not match");
+        assertEquals(devicePosition, createdDevice.getDevicePosition(), "Device position does not match");
     }
 
     @Test

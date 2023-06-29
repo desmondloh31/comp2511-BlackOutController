@@ -20,9 +20,9 @@ public class HandheldDevice extends Device {
     }
 
     public EntityInfoResponse getInfo() {
-        String deviceId = super.getId();
-        Angle devicePosition = super.getPosition();
-        String deviceType = super.getType();
+        String deviceId = super.getDeviceId();
+        Angle devicePosition = super.getDevicePosition();
+        String deviceType = super.getDeviceType();
         double deviceHeight = RADIUS_OF_JUPITER;
 
         Map<String, FileInfoResponse> map = new HashMap<>();
@@ -43,15 +43,17 @@ public class HandheldDevice extends Device {
         List<String> list = new ArrayList<>();
         for (Satellite satellite : blackout.getSatelliteList()) {
             if (withinVisibleRange(satellite)) {
-                list.add(satellite.getId());
+                list.add(satellite.getSatelliteId());
             }
         }
         return list;
     }
 
     private boolean withinVisibleRange(Satellite satellite) {
-        double distance = MathsHelper.getDistance(satellite.getHeight(), satellite.getPosition(), super.getPosition());
-        boolean visible = MathsHelper.isVisible(satellite.getHeight(), satellite.getPosition(), super.getPosition());
+        double distance = MathsHelper.getDistance(satellite.getSatelliteHeight(), satellite.getSatellitePosition(),
+                super.getDevicePosition());
+        boolean visible = MathsHelper.isVisible(satellite.getSatelliteHeight(), satellite.getSatellitePosition(),
+                super.getDevicePosition());
         return distance <= maxDistance && visible;
 
     }

@@ -2,7 +2,7 @@ package unsw.blackout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import unsw.response.models.EntityInfoResponse;
 import unsw.utils.Angle;
@@ -24,7 +24,7 @@ public class BlackoutController {
     // Helper function that finds device By Id:
     public Device findDeviceById(String deviceId) {
         for (Device device : this.deviceList) {
-            if (device.getId().equals(deviceId)) {
+            if (device.getDeviceId().equals(deviceId)) {
                 return device;
             }
         }
@@ -34,7 +34,7 @@ public class BlackoutController {
     // Helper function that finds satellite by Id:
     public Satellite findSatelliteById(String satelliteId) {
         for (Satellite satellite : this.satelliteList) {
-            if (satellite.getId().equals(satelliteId)) {
+            if (satellite.getSatelliteId().equals(satelliteId)) {
                 return satellite;
             }
         }
@@ -63,15 +63,7 @@ public class BlackoutController {
     }
 
     public void removeDevice(String deviceId) {
-        // TODO: Task 1b)
-        Iterator<Device> deviceIterator = deviceList.iterator();
-        while (deviceIterator.hasNext()) {
-            Device device = deviceIterator.next();
-            if (device.getId().equals(deviceId)) {
-                deviceIterator.remove();
-                break;
-            }
-        }
+        deviceList.removeIf(device -> device.getDeviceId().equals(deviceId));
     }
 
     public void createSatellite(String satelliteId, String type, double height, Angle position) {
@@ -88,33 +80,15 @@ public class BlackoutController {
     }
 
     public void removeSatellite(String satelliteId) {
-
-        Iterator<Satellite> satelliteIterator = satelliteList.iterator();
-        while (satelliteIterator.hasNext()) {
-            Satellite satellite = satelliteIterator.next();
-            if (satellite.getId().equals(satelliteId)) {
-                satelliteIterator.remove();
-                break;
-            }
-        }
+        satelliteList.removeIf(satellite -> satellite.getSatelliteId().equals(satelliteId));
     }
 
     public List<String> listDeviceIds() {
-
-        List<String> allDeviceIds = new ArrayList<>();
-        for (Device deviceId : deviceList) {
-            allDeviceIds.add(deviceId.getId());
-        }
-        return allDeviceIds;
+        return deviceList.stream().map(Device::getDeviceId).collect(Collectors.toList());
     }
 
     public List<String> listSatelliteIds() {
-
-        List<String> allSatelliteIds = new ArrayList<>();
-        for (Satellite satelliteId : satelliteList) {
-            allSatelliteIds.add(satelliteId.getId());
-        }
-        return allSatelliteIds;
+        return satelliteList.stream().map(Satellite::getSatelliteId).collect(Collectors.toList());
     }
 
     public void addFileToDevice(String deviceId, String filename, String content) {
@@ -162,7 +136,7 @@ public class BlackoutController {
         // TODO: Task 2 b)
         List<String> EntitiesInRange = new ArrayList<>();
         for (Satellite satellite : satelliteList) {
-            if (satellite.getId().equalsIgnoreCase(id)) {
+            if (satellite.getSatelliteId().equalsIgnoreCase(id)) {
                 EntitiesInRange = satellite.updateList(this);
                 break;
             }
@@ -170,7 +144,7 @@ public class BlackoutController {
 
         if (EntitiesInRange.isEmpty()) {
             for (Device device : deviceList) {
-                if (device.getId().equalsIgnoreCase(id)) {
+                if (device.getDeviceId().equalsIgnoreCase(id)) {
                     EntitiesInRange = device.updateList(this);
                     break;
                 }
