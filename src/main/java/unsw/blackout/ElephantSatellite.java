@@ -6,11 +6,9 @@ import unsw.utils.MathsHelper;
 import unsw.utils.Angle;
 
 import java.util.List;
-import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class ElephantSatellite extends Satellite {

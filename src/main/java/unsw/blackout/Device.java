@@ -26,9 +26,6 @@ public abstract class Device {
         this.deviceType = deviceType;
         this.deviceId = deviceId;
         this.devicePosition = devicePosition;
-        this.maxBandWidth = maxBandWidth;
-        this.maxStorageSpace = maxStorageSpace;
-        this.maxFileCap = maxFileCap;
     }
 
     public FileConstructor getFileByID(String fileName) {

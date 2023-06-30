@@ -18,7 +18,6 @@ public class FileTransfer {
         this.direction = direction;
         this.bytesTransferred = 0;
         this.bytesRemaining = 0;
-        this.targetId = targetId;
     }
 
     // Getter for file

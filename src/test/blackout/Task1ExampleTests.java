@@ -1,15 +1,13 @@
 package blackout;
 
-import org.eclipse.jetty.websocket.common.frames.BinaryFrame;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.csv.CsvParser;
 
 import unsw.blackout.BlackoutController;
-import unsw.blackout.DesktopDevice;
 import unsw.blackout.Device;
 import unsw.blackout.FileConstructor;
+import unsw.blackout.StandardSatellite;
 import unsw.response.models.EntityInfoResponse;
 import unsw.response.models.FileInfoResponse;
 import unsw.utils.Angle;
@@ -22,9 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static blackout.TestHelpers.assertListAreEqualIgnoringOrder;
 
-import java.io.File;
 import java.util.Arrays;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
