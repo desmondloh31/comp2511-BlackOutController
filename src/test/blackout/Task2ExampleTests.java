@@ -6,6 +6,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import unsw.blackout.BlackoutController;
 import unsw.blackout.FileTransferException;
+import unsw.blackout.StandardSatellite;
 import unsw.response.models.FileInfoResponse;
 import unsw.response.models.EntityInfoResponse;
 import unsw.utils.Angle;
@@ -226,6 +227,16 @@ public class Task2ExampleTests {
 
     }
 
-    // writing some tests to test for sendFile() method: (Task 2c)
+    @Test
+    public void testSatelliteInformation() {
+        BlackoutController controller = new BlackoutController();
+        controller.createSatellite("Satellite1", "StandardSatellite", 75000, Angle.fromDegrees(0));
+        StandardSatellite satellite1 = (StandardSatellite) controller.findSatelliteById("Satellite1");
 
+        assertEquals("Satellite1", satellite1.getInfo().getDeviceId());
+        assertEquals(Angle.fromDegrees(0), satellite1.getInfo().getPosition());
+        assertEquals(75000, satellite1.getInfo().getHeight());
+        assertEquals("StandardSatellite", satellite1.getInfo().getType());
+
+    }
 }
