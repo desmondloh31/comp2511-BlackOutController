@@ -17,7 +17,8 @@
 - Linter not passed
 
 ## Blogging 5%
-- No blogging
+- 5/5
+- Excellent consideration of design principles!
 
 ## Testing 5%
 - 3/5, more tests needed to cover a range of edge cases
