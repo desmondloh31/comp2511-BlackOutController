@@ -6,6 +6,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import unsw.blackout.BlackoutController;
 import unsw.blackout.FileTransferException;
+import unsw.blackout.Satellite;
 import unsw.blackout.StandardSatellite;
 import unsw.response.models.FileInfoResponse;
 import unsw.response.models.EntityInfoResponse;

@@ -183,9 +183,9 @@ public class BlackoutController {
         }
         if (toEntity.getAvailableBandwidth() < transfer.getFileSize()) {
             if (toEntity.getTotalFiles() >= toEntity.getMaxFileCap()) {
-                throw new FileTransferException.VirtualFileNoStorageException(maxFiles);
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxFiles);
             } else {
-                throw new FileTransferException.VirtualFileNoStorageException(maxStorage);
+                throw new FileTransferException.VirtualFileNoStorageSpaceException(maxStorage);
             }
         }
         fromEntity.removeFile(transfer);
